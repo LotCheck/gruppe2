@@ -1,28 +1,27 @@
-
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { CheckCircle, FileText, Download, Home, Clock, MessageSquare } from 'lucide-react';
-
 const ClaimSuccessStep = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [claimId, setClaimId] = useState<string>('');
-
   useEffect(() => {
     // Get claim ID from location state or localStorage
     const id = location.state?.claimId || localStorage.getItem('currentClaimId') || `CL-${Date.now()}`;
     setClaimId(id);
-    
+
     // Store the claim ID for later use
     localStorage.setItem('currentClaimId', id);
   }, [location]);
-
   const handleViewStatus = () => {
-    navigate('/claim-report', { state: { claimId } });
+    navigate('/claim-report', {
+      state: {
+        claimId
+      }
+    });
   };
-
   const handleNewClaim = () => {
     // Clear current claim data
     localStorage.removeItem('currentClaimId');
@@ -34,12 +33,9 @@ const ClaimSuccessStep = () => {
     localStorage.removeItem('claimSeverity');
     localStorage.removeItem('claimRecommendation');
     localStorage.removeItem('claimShouldReport');
-    
     navigate('/claim-report');
   };
-
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-100">
+  return <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-100">
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-2xl mx-auto">
           {/* Success Header */}
@@ -136,33 +132,14 @@ const ClaimSuccessStep = () => {
 
           {/* Action Buttons */}
           <div className="space-y-3">
-            <Button 
-              onClick={handleViewStatus}
-              className="w-full bg-blue-600 hover:bg-blue-700 py-3 text-lg"
-              size="lg"
-            >
+            <Button onClick={handleViewStatus} className="w-full bg-blue-600 hover:bg-blue-700 py-3 text-lg" size="lg">
               <FileText className="h-5 w-5 mr-2" />
               Schadenstatus verfolgen
             </Button>
             
-            <Button 
-              onClick={handleNewClaim}
-              variant="outline"
-              className="w-full py-3"
-              size="lg"
-            >
-              Neuen Schaden melden
-            </Button>
             
-            <Button 
-              onClick={() => navigate('/')}
-              variant="ghost"
-              className="w-full py-3"
-              size="lg"
-            >
-              <Home className="h-5 w-5 mr-2" />
-              Zur Startseite
-            </Button>
+            
+            
           </div>
 
           {/* Document Download */}
@@ -185,8 +162,6 @@ const ClaimSuccessStep = () => {
           </Card>
         </div>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default ClaimSuccessStep;
