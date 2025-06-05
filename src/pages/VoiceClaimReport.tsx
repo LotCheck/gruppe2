@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Mic, MicOff, Bot, Upload, FileText, Camera, Image, X, Check, User, Play, Star, Menu } from 'lucide-react';
+import { Mic, MicOff, Bot, Upload, FileText, Camera, Image, X, Check, User, Play, Star, Menu, MoreVertical } from 'lucide-react';
 import AccidentSequenceSlideshow from '@/components/claims/AccidentSequenceSlideshow';
 
 interface Message {
@@ -124,8 +124,8 @@ const VoiceClaimReport = () => {
         return "Danke für die Information. Gab es außer Ihnen noch weitere beteiligte Personen, Fahrzeuge oder wurden andere Sachen beschädigt?";
         
       case 'other_parties':
-        setCurrentStep('upload_options');
         setTimeout(() => setShowUploadOptions(true), 1000);
+        setCurrentStep('upload_options');
         return "Das hilft uns schon sehr weiter. Um Ihre Schadensmeldung zügig bearbeiten zu können, nutzen Sie bitte die folgenden Optionen:";
         
       default:
@@ -347,7 +347,7 @@ const VoiceClaimReport = () => {
     <div className="h-full bg-gradient-to-br from-blue-50 to-indigo-100">
       <div className="h-full px-4 py-4 max-w-md mx-auto flex flex-col">
         
-        {/* Redesigned Header */}
+        {/* Updated Header to match reference */}
         <div className="h-[50px] flex items-center justify-between mb-4 bg-white rounded-lg shadow-sm px-4">
           {/* Close Button - Left */}
           <Button 
@@ -359,22 +359,26 @@ const VoiceClaimReport = () => {
             <X className="h-5 w-5 text-gray-600" />
           </Button>
 
-          {/* Center - Sophie with AI Icons */}
-          <div className="flex items-center space-x-2">
-            <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
-            <h1 className="text-lg font-bold text-gray-900">
-              Sophie
-            </h1>
-            <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
+          {/* Center - Sophie für Versicherungen with star icon and phone */}
+          <div className="flex flex-col items-center">
+            <div className="flex items-center space-x-1">
+              <Star className="h-4 w-4 text-blue-600 fill-blue-600" />
+              <h1 className="text-sm font-semibold text-gray-900">
+                Sophie für Versicherungen
+              </h1>
+            </div>
+            <p className="text-xs text-gray-500">
+              +49.40.7823949
+            </p>
           </div>
 
-          {/* Menu Button - Right */}
+          {/* Menu Button - Right (3 vertical dots) */}
           <Button 
             variant="ghost" 
             size="sm"
             className="p-2 hover:bg-gray-100"
           >
-            <Menu className="h-5 w-5 text-gray-600" />
+            <MoreVertical className="h-5 w-5 text-gray-600" />
           </Button>
         </div>
 
