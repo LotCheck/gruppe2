@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -14,14 +13,16 @@ interface Message {
 
 interface UploadedPhoto {
   id: string;
-  file: File;
+  file?: File;
   url: string;
+  name: string;
 }
 
 type ConversationStep = 'initial' | 'location_time' | 'other_parties' | 'upload_options' | 'photo_upload' | 'completed';
 
 const VoiceClaimReport = () => {
   const navigate = useNavigate();
+  
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
@@ -42,6 +43,20 @@ const VoiceClaimReport = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Mock images for upload simulation
+  const mockDamagePhotos = [
+    {
+      id: 'mock-1',
+      url: '/lovable-uploads/cf95f053-d4c1-4ab8-a77c-e4f27dccf809.png',
+      name: 'Heckschaden.jpg'
+    },
+    {
+      id: 'mock-2', 
+      url: '/lovable-uploads/2f3a50a5-7893-430f-a79a-fc1d204207c8.png',
+      name: 'Frontschaden.jpg'
+    }
+  ];
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -122,9 +137,32 @@ const VoiceClaimReport = () => {
   const handlePhotoUpload = () => {
     setCurrentStep('photo_upload');
     setShowUploadOptions(false);
+    
+    // Mock upload of the attached images
     setTimeout(() => {
       addBotMessage('Bitte laden Sie nun noch Fotos vom Schaden hoch! So können wir Ihnen schneller helfen.');
       setShowPhotoUpload(true);
+      
+      // Simulate automatic upload of mock images
+      setTimeout(() => {
+        mockDamagePhotos.forEach((photo, index) => {
+          setTimeout(() => {
+            setUploadedPhotos(prev => [...prev, photo]);
+            
+            // Show success animation
+            setUploadSuccess(true);
+            setTimeout(() => setUploadSuccess(false), 1500);
+            
+            // Bot feedback after first photo
+            if (index === 0) {
+              setTimeout(() => {
+                addBotMessage('Super, danke! Das hilft uns sehr. Sie können gerne weitere Fotos hinzufügen.');
+              }, 800);
+            }
+          }, index * 1000);
+        });
+      }, 1000);
+      
     }, 500);
   };
 
@@ -143,7 +181,8 @@ const VoiceClaimReport = () => {
         const newPhoto: UploadedPhoto = {
           id: Date.now().toString() + Math.random(),
           file,
-          url
+          url,
+          name: file.name
         };
         
         setUploadedPhotos(prev => [...prev, newPhoto]);
@@ -168,7 +207,7 @@ const VoiceClaimReport = () => {
   const removePhoto = (photoId: string) => {
     setUploadedPhotos(prev => {
       const photoToRemove = prev.find(p => p.id === photoId);
-      if (photoToRemove) {
+      if (photoToRemove && photoToRemove.file) {
         URL.revokeObjectURL(photoToRemove.url);
       }
       return prev.filter(p => p.id !== photoId);
@@ -322,7 +361,7 @@ const VoiceClaimReport = () => {
                           <div key={photo.id} className="relative group">
                             <img
                               src={photo.url}
-                              alt="Schadensfoto"
+                              alt={photo.name}
                               className="w-full h-20 object-cover rounded-md border border-gray-200"
                             />
                             <button
@@ -331,7 +370,7 @@ const VoiceClaimReport = () => {
                             >
                               <X className="h-3 w-3" />
                             </button>
-                            {uploadSuccess && (
+                            {uploadSuccess && uploadedPhotos.indexOf(photo) === uploadedPhotos.length - 1 && (
                               <div className="absolute inset-0 bg-green-500 bg-opacity-20 rounded-md flex items-center justify-center">
                                 <Check className="h-6 w-6 text-green-600" />
                               </div>
