@@ -121,9 +121,9 @@ const VoiceClaimReport = () => {
   const simulateVoiceProcessing = () => {
     setIsProcessing(true);
 
-    // Add user message first with voice duration
+    // Add user message first with longer voice duration (50 seconds to 1:30)
     const userMessage = getUserMessageForStep(currentStep);
-    const mockDuration = 2 + Math.random() * 3; // Random duration between 2-5 seconds
+    const mockDuration = 50 + Math.random() * 40; // Random duration between 50-90 seconds
     addUserMessage(userMessage, true, Math.floor(mockDuration));
     setTimeout(() => {
       setIsProcessing(false);
@@ -332,12 +332,12 @@ const VoiceClaimReport = () => {
                     <div className="flex-1">
                       <div className="flex items-center space-x-2 mb-1">
                         <div className="flex space-x-1">
-                          {[...Array(5)].map((_, i) => <div key={i} className="w-1 bg-white rounded-full" style={{
+                          {[...Array(8)].map((_, i) => <div key={i} className="w-1 bg-white rounded-full" style={{
                       height: `${8 + Math.sin(i * 0.5) * 4}px`
                     }} />)}
                         </div>
                         <span className="text-xs font-medium">
-                          {message.voiceDuration ? formatVoiceDuration(message.voiceDuration) : '0:03'}
+                          {message.voiceDuration ? formatVoiceDuration(message.voiceDuration) : '1:15'}
                         </span>
                       </div>
                     </div>
@@ -496,19 +496,19 @@ const VoiceClaimReport = () => {
           <div ref={messagesEndRef} />
         </div>
 
-        {/* Voice Input Interface - Full Width CTA without white background */}
+        {/* Voice Input Interface - Updated with reduced spacing */}
         {canRecord && <div className="p-4">
             <Button onClick={isRecording ? stopRecording : startRecording} disabled={isProcessing} className={`
                 w-full h-16 rounded-full transition-all duration-300 flex flex-col items-center justify-center
                 ${isRecording ? 'bg-red-500 hover:bg-red-600 animate-pulse text-white' : 'bg-blue-600 hover:bg-blue-700 text-white'}
               `}>
-              <div className="flex items-center space-x-2 mb-1">
+              <div className="flex items-center space-x-2">
                 {isRecording ? <MicOff className="h-5 w-5" /> : <Mic className="h-5 w-5" />}
                 <span className="text-lg font-medium">
                   {isRecording ? 'Stoppen' : 'Sprechen'}
                 </span>
               </div>
-              <span className="text-xs opacity-80">
+              <span className="text-xs opacity-80 mt-1">
                 Tippen Sie, um zu sprechen.
               </span>
             </Button>

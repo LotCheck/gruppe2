@@ -27,13 +27,13 @@ const VoiceClaimDrawer = () => {
       {/* Background - Index page */}
       <Index />
       
-      {/* Drawer overlay */}
+      {/* Drawer overlay - Full screen */}
       <Drawer open={isOpen} onOpenChange={(open) => {
         if (!open) {
           handleClose();
         }
       }}>
-        <DrawerContent className="h-[75vh] max-w-md mx-auto">
+        <DrawerContent className="h-[100vh] max-w-full w-full mx-auto">
           <DrawerHeader className="sr-only">
             <DrawerTitle>Schadensmeldung</DrawerTitle>
           </DrawerHeader>
