@@ -52,27 +52,17 @@ const VoiceClaimReport = () => {
   const cameraInputRef = useRef<HTMLInputElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Mock images for upload simulation with ordered names
+  // Mock images for upload simulation with ordered names - updated with new images
   const mockDamagePhotos = [
     {
       id: 'mock-1',
-      url: '/lovable-uploads/94ac65a8-0be7-4610-9df3-92c92481b032.png',
-      name: '01_heckschaden.jpg'
+      url: '/lovable-uploads/0ca5fba2-a303-4a1d-8436-56a3bbbacb28.png',
+      name: '01_green_car.jpg'
     },
     {
       id: 'mock-2', 
-      url: '/lovable-uploads/cafcdc7d-fe70-4a04-9b1b-cb7a56107b39.png',
-      name: '02_frontschaden.jpg'
-    },
-    {
-      id: 'mock-3',
-      url: '/lovable-uploads/d6f3f528-3e84-4b23-9037-728940a3addb.png', 
-      name: '03_seitenschaden.jpg'
-    },
-    {
-      id: 'mock-4',
-      url: '/lovable-uploads/b77fca91-2708-4ab6-b475-b7f3322e6515.png',
-      name: '04_unfallstelle.jpg'
+      url: '/lovable-uploads/358f46be-5f38-448a-bbc8-2fc6de6af917.png',
+      name: '02_black_classic_car.jpg'
     }
   ];
 
