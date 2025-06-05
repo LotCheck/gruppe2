@@ -443,11 +443,7 @@ const VoiceClaimReport = () => {
                 </div>
               </Card>
               
-              <Card className="p-3 bg-blue-50 border border-blue-200">
-                <p className="text-xs text-blue-700">
-                  Laden Sie bitte Fotos vom Unfallort und den Schäden hoch. Falls ein Polizeibericht vorliegt, fügen Sie diesen ebenfalls hinzu.
-                </p>
-              </Card>
+              
             </div>}
 
           {/* Photo Upload Interface */}
