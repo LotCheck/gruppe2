@@ -44,8 +44,8 @@ const ClaimPreviewStep = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-      <div className="container mx-auto px-4 py-6">
-        <div className="mb-6">
+      <div className="container mx-auto px-4 py-4 md:py-6">
+        <div className="mb-4 md:mb-6">
           <Button 
             variant="ghost" 
             onClick={() => navigate('/claim-report')}
@@ -58,23 +58,24 @@ const ClaimPreviewStep = () => {
 
         <StepNavigation currentStep={3} />
 
-        <Card className="mb-6 shadow-lg border-0 max-w-4xl mx-auto">
-          <CardContent className="p-8">
+        <Card className="mb-4 md:mb-6 shadow-lg border-0 max-w-4xl mx-auto">
+          <CardContent className="p-4 md:p-8">
             <ClaimPreview claimData={getClaimData()} />
           </CardContent>
         </Card>
 
-        <div className="flex justify-between max-w-4xl mx-auto">
+        <div className="flex flex-col space-y-3 md:flex-row md:justify-between md:space-y-0 max-w-4xl mx-auto px-4">
           <Button 
             variant="outline" 
             onClick={() => navigate('/claim-report/analysis')}
+            className="w-full md:w-auto"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
             Zurück
           </Button>
           <Button 
             onClick={handleSubmit}
-            className="bg-green-600 hover:bg-green-700 px-8"
+            className="bg-green-600 hover:bg-green-700 px-8 w-full md:w-auto"
           >
             <CheckCircle className="h-4 w-4 mr-2" />
             Schaden melden

@@ -60,43 +60,43 @@ const ClaimPreview = ({ claimData }: ClaimPreviewProps) => {
   ];
 
   return (
-    <div className="space-y-6">
-      <div className="text-center">
-        <h3 className="text-2xl font-bold mb-2">Schadensmeldung - Vollständige Zusammenfassung</h3>
-        <p className="text-gray-600">
+    <div className="space-y-4 md:space-y-6">
+      <div className="text-center px-4">
+        <h3 className="text-xl md:text-2xl font-bold mb-2">Schadensmeldung - Vollständige Zusammenfassung</h3>
+        <p className="text-sm md:text-base text-gray-600">
           Überprüfen Sie alle Angaben vor der finalen Übermittlung an Ihre Versicherung.
         </p>
       </div>
 
       {/* Versicherungsnehmer */}
       <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <User className="h-5 w-5 text-blue-600" />
+        <CardHeader className="pb-3 md:pb-6">
+          <CardTitle className="flex items-center space-x-2 text-lg md:text-xl">
+            <User className="h-4 w-4 md:h-5 md:w-5 text-blue-600" />
             <span>Angaben zum Versicherungsnehmer</span>
           </CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <CardContent className="pt-0">
+          <div className="space-y-3 md:grid md:grid-cols-2 md:gap-4 md:space-y-0">
             <div>
-              <span className="text-sm text-gray-600">Name:</span>
-              <p className="font-medium">{mockPolicyholderData.name}</p>
+              <span className="text-xs md:text-sm text-gray-600">Name:</span>
+              <p className="font-medium text-sm md:text-base">{mockPolicyholderData.name}</p>
             </div>
             <div>
-              <span className="text-sm text-gray-600">Versicherungsnummer:</span>
-              <p className="font-medium">{mockPolicyholderData.policyNumber}</p>
+              <span className="text-xs md:text-sm text-gray-600">Versicherungsnummer:</span>
+              <p className="font-medium text-sm md:text-base">{mockPolicyholderData.policyNumber}</p>
             </div>
             <div className="md:col-span-2">
-              <span className="text-sm text-gray-600">Adresse:</span>
-              <p className="font-medium">{mockPolicyholderData.address}</p>
+              <span className="text-xs md:text-sm text-gray-600">Adresse:</span>
+              <p className="font-medium text-sm md:text-base">{mockPolicyholderData.address}</p>
             </div>
             <div>
-              <span className="text-sm text-gray-600">Telefon:</span>
-              <p className="font-medium">{mockPolicyholderData.phone}</p>
+              <span className="text-xs md:text-sm text-gray-600">Telefon:</span>
+              <p className="font-medium text-sm md:text-base">{mockPolicyholderData.phone}</p>
             </div>
             <div>
-              <span className="text-sm text-gray-600">E-Mail:</span>
-              <p className="font-medium">{mockPolicyholderData.email}</p>
+              <span className="text-xs md:text-sm text-gray-600">E-Mail:</span>
+              <p className="font-medium text-sm md:text-base break-all">{mockPolicyholderData.email}</p>
             </div>
           </div>
         </CardContent>
@@ -104,37 +104,37 @@ const ClaimPreview = ({ claimData }: ClaimPreviewProps) => {
 
       {/* Fahrzeugdaten */}
       <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <Car className="h-5 w-5 text-blue-600" />
+        <CardHeader className="pb-3 md:pb-6">
+          <CardTitle className="flex items-center space-x-2 text-lg md:text-xl">
+            <Car className="h-4 w-4 md:h-5 md:w-5 text-blue-600" />
             <span>Angaben zum Fahrzeug</span>
           </CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <CardContent className="pt-0">
+          <div className="space-y-3 md:grid md:grid-cols-3 md:gap-4 md:space-y-0">
             <div>
-              <span className="text-sm text-gray-600">Kennzeichen:</span>
-              <p className="font-medium">{mockVehicleData.licensePlate}</p>
+              <span className="text-xs md:text-sm text-gray-600">Kennzeichen:</span>
+              <p className="font-medium text-sm md:text-base">{mockVehicleData.licensePlate}</p>
             </div>
             <div>
-              <span className="text-sm text-gray-600">Marke:</span>
-              <p className="font-medium">{mockVehicleData.make}</p>
+              <span className="text-xs md:text-sm text-gray-600">Marke:</span>
+              <p className="font-medium text-sm md:text-base">{mockVehicleData.make}</p>
             </div>
             <div>
-              <span className="text-sm text-gray-600">Modell:</span>
-              <p className="font-medium">{mockVehicleData.model}</p>
+              <span className="text-xs md:text-sm text-gray-600">Modell:</span>
+              <p className="font-medium text-sm md:text-base">{mockVehicleData.model}</p>
             </div>
             <div>
-              <span className="text-sm text-gray-600">Baujahr:</span>
-              <p className="font-medium">{mockVehicleData.year}</p>
+              <span className="text-xs md:text-sm text-gray-600">Baujahr:</span>
+              <p className="font-medium text-sm md:text-base">{mockVehicleData.year}</p>
             </div>
             <div>
-              <span className="text-sm text-gray-600">Farbe:</span>
-              <p className="font-medium">{mockVehicleData.color}</p>
+              <span className="text-xs md:text-sm text-gray-600">Farbe:</span>
+              <p className="font-medium text-sm md:text-base">{mockVehicleData.color}</p>
             </div>
             <div>
-              <span className="text-sm text-gray-600">Fahrgestellnummer:</span>
-              <p className="font-medium text-xs">{mockVehicleData.vin}</p>
+              <span className="text-xs md:text-sm text-gray-600">Fahrgestellnummer:</span>
+              <p className="font-medium text-xs break-all">{mockVehicleData.vin}</p>
             </div>
           </div>
         </CardContent>
@@ -142,25 +142,25 @@ const ClaimPreview = ({ claimData }: ClaimPreviewProps) => {
 
       {/* Unfallzeitpunkt und Ort */}
       <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <Clock className="h-5 w-5 text-blue-600" />
+        <CardHeader className="pb-3 md:pb-6">
+          <CardTitle className="flex items-center space-x-2 text-lg md:text-xl">
+            <Clock className="h-4 w-4 md:h-5 md:w-5 text-blue-600" />
             <span>Unfallzeitpunkt und Ort</span>
           </CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <CardContent className="pt-0">
+          <div className="space-y-3 md:grid md:grid-cols-2 md:gap-4 md:space-y-0">
             <div>
-              <span className="text-sm text-gray-600">Datum und Uhrzeit:</span>
-              <p className="font-medium">{claimData.dateTime || "15.01.2024, 14:30 Uhr"}</p>
+              <span className="text-xs md:text-sm text-gray-600">Datum und Uhrzeit:</span>
+              <p className="font-medium text-sm md:text-base">{claimData.dateTime || "15.01.2024, 14:30 Uhr"}</p>
             </div>
             <div>
-              <span className="text-sm text-gray-600">Unfallort:</span>
-              <p className="font-medium">{claimData.location || "Kreuzung Hauptstraße / Bahnhofstraße, 12345 Musterstadt"}</p>
+              <span className="text-xs md:text-sm text-gray-600">Unfallort:</span>
+              <p className="font-medium text-sm md:text-base">{claimData.location || "Kreuzung Hauptstraße / Bahnhofstraße, 12345 Musterstadt"}</p>
             </div>
             <div className="md:col-span-2">
-              <span className="text-sm text-gray-600">Wetterbedingungen:</span>
-              <p className="font-medium">Trocken, gute Sicht</p>
+              <span className="text-xs md:text-sm text-gray-600">Wetterbedingungen:</span>
+              <p className="font-medium text-sm md:text-base">Trocken, gute Sicht</p>
             </div>
           </div>
         </CardContent>
@@ -168,31 +168,31 @@ const ClaimPreview = ({ claimData }: ClaimPreviewProps) => {
 
       {/* Beteiligte Dritte */}
       <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <Users className="h-5 w-5 text-blue-600" />
+        <CardHeader className="pb-3 md:pb-6">
+          <CardTitle className="flex items-center space-x-2 text-lg md:text-xl">
+            <Users className="h-4 w-4 md:h-5 md:w-5 text-blue-600" />
             <span>Beteiligte Dritte</span>
           </CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="pt-0">
           {mockThirdParties.map((party, index) => (
-            <div key={index} className="border-l-4 border-blue-200 pl-4 mb-4 last:mb-0">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div key={index} className="border-l-4 border-blue-200 pl-3 md:pl-4 mb-4 last:mb-0">
+              <div className="space-y-3 md:grid md:grid-cols-2 md:gap-4 md:space-y-0">
                 <div>
-                  <span className="text-sm text-gray-600">Name:</span>
-                  <p className="font-medium">{party.name}</p>
+                  <span className="text-xs md:text-sm text-gray-600">Name:</span>
+                  <p className="font-medium text-sm md:text-base">{party.name}</p>
                 </div>
                 <div>
-                  <span className="text-sm text-gray-600">Kennzeichen:</span>
-                  <p className="font-medium">{party.licensePlate}</p>
+                  <span className="text-xs md:text-sm text-gray-600">Kennzeichen:</span>
+                  <p className="font-medium text-sm md:text-base">{party.licensePlate}</p>
                 </div>
                 <div>
-                  <span className="text-sm text-gray-600">Versicherung:</span>
-                  <p className="font-medium">{party.insurance}</p>
+                  <span className="text-xs md:text-sm text-gray-600">Versicherung:</span>
+                  <p className="font-medium text-sm md:text-base">{party.insurance}</p>
                 </div>
                 <div>
-                  <span className="text-sm text-gray-600">Telefon:</span>
-                  <p className="font-medium">{party.phone}</p>
+                  <span className="text-xs md:text-sm text-gray-600">Telefon:</span>
+                  <p className="font-medium text-sm md:text-base">{party.phone}</p>
                 </div>
               </div>
             </div>
@@ -202,19 +202,19 @@ const ClaimPreview = ({ claimData }: ClaimPreviewProps) => {
 
       {/* Unfallhergang */}
       <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <MessageSquare className="h-5 w-5 text-blue-600" />
+        <CardHeader className="pb-3 md:pb-6">
+          <CardTitle className="flex items-center space-x-2 text-lg md:text-xl">
+            <MessageSquare className="h-4 w-4 md:h-5 md:w-5 text-blue-600" />
             <span>Unfallhergang / Unfallbericht</span>
           </CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="bg-gray-50 p-4 rounded-md">
-            <p className="text-gray-800 leading-relaxed">{claimData.description}</p>
+        <CardContent className="pt-0">
+          <div className="bg-gray-50 p-3 md:p-4 rounded-md">
+            <p className="text-gray-800 leading-relaxed text-sm md:text-base">{claimData.description}</p>
           </div>
-          <div className="mt-4 p-3 bg-blue-50 rounded-md">
-            <h5 className="font-medium text-blue-800 mb-2">Zusätzliche Informationen:</h5>
-            <ul className="text-sm text-blue-700 space-y-1">
+          <div className="mt-3 md:mt-4 p-3 bg-blue-50 rounded-md">
+            <h5 className="font-medium text-blue-800 mb-2 text-sm md:text-base">Zusätzliche Informationen:</h5>
+            <ul className="text-xs md:text-sm text-blue-700 space-y-1">
               <li>• Geschwindigkeit zum Unfallzeitpunkt: ca. 30 km/h</li>
               <li>• Bremsspuren vorhanden: Ja</li>
               <li>• Polizei vor Ort: Nein</li>
@@ -226,17 +226,17 @@ const ClaimPreview = ({ claimData }: ClaimPreviewProps) => {
 
       {/* Schadenszusammenfassung mit Fotos */}
       <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <Camera className="h-5 w-5 text-blue-600" />
+        <CardHeader className="pb-3 md:pb-6">
+          <CardTitle className="flex items-center space-x-2 text-lg md:text-xl">
+            <Camera className="h-4 w-4 md:h-5 md:w-5 text-blue-600" />
             <span>Schadenszusammenfassung inkl. Fotos</span>
           </CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="mb-6">
-            <h5 className="font-medium mb-3">Schadensbeschreibung:</h5>
-            <div className="bg-gray-50 p-4 rounded-md">
-              <ul className="space-y-2 text-sm">
+        <CardContent className="pt-0">
+          <div className="mb-4 md:mb-6">
+            <h5 className="font-medium mb-3 text-sm md:text-base">Schadensbeschreibung:</h5>
+            <div className="bg-gray-50 p-3 md:p-4 rounded-md">
+              <ul className="space-y-2 text-xs md:text-sm">
                 <li>• <strong>Linker Kotflügel:</strong> Lackschäden und Dellen (ca. 15cm x 8cm)</li>
                 <li>• <strong>Linke Fahrzeugtür:</strong> Verformung, Tür schließt schwergängig</li>
                 <li>• <strong>Außenspiegel links:</strong> Gehäuse beschädigt, Glas gesprungen</li>
@@ -247,16 +247,16 @@ const ClaimPreview = ({ claimData }: ClaimPreviewProps) => {
 
           {claimData.photos.length > 0 && (
             <div>
-              <h5 className="font-medium mb-3">Schadenfotos ({claimData.photos.length})</h5>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <h5 className="font-medium mb-3 text-sm md:text-base">Schadenfotos ({claimData.photos.length})</h5>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4">
                 {claimData.photos.map((photo, index) => (
                   <div key={index} className="relative">
                     <img 
                       src={photo} 
                       alt={`Schaden ${index + 1}`}
-                      className="w-full h-24 object-cover rounded-md border"
+                      className="w-full h-20 md:h-24 object-cover rounded-md border"
                     />
-                    <div className="absolute top-1 right-1 bg-black bg-opacity-50 text-white text-xs px-2 py-1 rounded">
+                    <div className="absolute top-1 right-1 bg-black bg-opacity-50 text-white text-xs px-1.5 py-0.5 md:px-2 md:py-1 rounded">
                       {index + 1}
                     </div>
                   </div>
@@ -269,20 +269,20 @@ const ClaimPreview = ({ claimData }: ClaimPreviewProps) => {
 
       {/* Schlussfolgerung */}
       <Card className="bg-blue-50 border-blue-200">
-        <CardHeader>
-          <CardTitle className="flex items-center space-x-2 text-blue-800">
-            <AlertTriangle className="h-5 w-5" />
+        <CardHeader className="pb-3 md:pb-6">
+          <CardTitle className="flex items-center space-x-2 text-blue-800 text-lg md:text-xl">
+            <AlertTriangle className="h-4 w-4 md:h-5 md:w-5" />
             <span>Schlussfolgerung und Bewertung</span>
           </CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <CardContent className="pt-0">
+          <div className="space-y-4 md:space-y-0 md:grid md:grid-cols-2 md:gap-6">
             {/* Geschätzter Schaden */}
             <div>
-              <h5 className="font-medium mb-3 text-blue-800">Geschätzter Schaden</h5>
+              <h5 className="font-medium mb-3 text-blue-800 text-sm md:text-base">Geschätzter Schaden</h5>
               <div className="space-y-3">
                 <div className="flex items-center space-x-2">
-                  <Badge className={severityColors[claimData.severity]}>
+                  <Badge className={`${severityColors[claimData.severity]} text-xs`}>
                     {severityLabels[claimData.severity]}
                   </Badge>
                 </div>
@@ -290,7 +290,7 @@ const ClaimPreview = ({ claimData }: ClaimPreviewProps) => {
                   <Euro className="h-4 w-4 text-blue-600" />
                   <span className="text-lg font-bold text-blue-600">€{claimData.estimatedCost}</span>
                 </div>
-                <div className="text-sm text-blue-700">
+                <div className="text-xs md:text-sm text-blue-700">
                   <p>Aufschlüsselung:</p>
                   <ul className="mt-1 space-y-1">
                     <li>• Lackierung: €800</li>
@@ -304,12 +304,12 @@ const ClaimPreview = ({ claimData }: ClaimPreviewProps) => {
             
             {/* Empfehlung */}
             <div>
-              <h5 className="font-medium mb-3 text-blue-800">Empfehlung</h5>
-              <div className={`p-4 rounded-md ${claimData.shouldReport ? 'bg-green-100' : 'bg-yellow-100'}`}>
-                <p className={`text-sm mb-3 ${claimData.shouldReport ? 'text-green-700' : 'text-yellow-700'}`}>
+              <h5 className="font-medium mb-3 text-blue-800 text-sm md:text-base">Empfehlung</h5>
+              <div className={`p-3 md:p-4 rounded-md ${claimData.shouldReport ? 'bg-green-100' : 'bg-yellow-100'}`}>
+                <p className={`text-xs md:text-sm mb-3 ${claimData.shouldReport ? 'text-green-700' : 'text-yellow-700'}`}>
                   {claimData.recommendation}
                 </p>
-                <div className="text-sm space-y-1">
+                <div className="text-xs md:text-sm space-y-1">
                   <h6 className="font-medium">Nächste Schritte:</h6>
                   <ul className="space-y-1">
                     <li>• Sachverständigengutachten einholen</li>
@@ -325,48 +325,48 @@ const ClaimPreview = ({ claimData }: ClaimPreviewProps) => {
 
       {/* Was passiert als Nächstes */}
       <Card className="bg-green-50 border-green-200">
-        <CardHeader>
-          <CardTitle className="text-green-800">Was passiert als Nächstes?</CardTitle>
+        <CardHeader className="pb-3 md:pb-6">
+          <CardTitle className="text-green-800 text-lg md:text-xl">Was passiert als Nächstes?</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="pt-0">
           <div className="space-y-4">
             <div className="flex items-start space-x-3">
-              <div className="w-8 h-8 bg-green-600 text-white rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                <span className="text-sm font-bold">1</span>
+              <div className="w-6 h-6 md:w-8 md:h-8 bg-green-600 text-white rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                <span className="text-xs md:text-sm font-bold">1</span>
               </div>
               <div>
-                <h5 className="font-medium text-green-800">Sofortige Bestätigung (jetzt)</h5>
-                <p className="text-green-700 text-sm">Sie erhalten eine Bestätigung und Ihre Schadennummer CL-{Date.now()} per E-Mail.</p>
+                <h5 className="font-medium text-green-800 text-sm md:text-base">Sofortige Bestätigung (jetzt)</h5>
+                <p className="text-green-700 text-xs md:text-sm">Sie erhalten eine Bestätigung und Ihre Schadennummer CL-{Date.now()} per E-Mail.</p>
               </div>
             </div>
             
             <div className="flex items-start space-x-3">
-              <div className="w-8 h-8 bg-green-600 text-white rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                <span className="text-sm font-bold">2</span>
+              <div className="w-6 h-6 md:w-8 md:h-8 bg-green-600 text-white rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                <span className="text-xs md:text-sm font-bold">2</span>
               </div>
               <div>
-                <h5 className="font-medium text-green-800">Automatische Weiterleitung (24h)</h5>
-                <p className="text-green-700 text-sm">Ihr Schaden wird automatisch an Ihre Versicherung und die Gegenseite übermittelt.</p>
+                <h5 className="font-medium text-green-800 text-sm md:text-base">Automatische Weiterleitung (24h)</h5>
+                <p className="text-green-700 text-xs md:text-sm">Ihr Schaden wird automatisch an Ihre Versicherung und die Gegenseite übermittelt.</p>
               </div>
             </div>
             
             <div className="flex items-start space-x-3">
-              <div className="w-8 h-8 bg-green-600 text-white rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                <span className="text-sm font-bold">3</span>
+              <div className="w-6 h-6 md:w-8 md:h-8 bg-green-600 text-white rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                <span className="text-xs md:text-sm font-bold">3</span>
               </div>
               <div>
-                <h5 className="font-medium text-green-800">Sachverständigentermin (2-3 Werktage)</h5>
-                <p className="text-green-700 text-sm">Ein Gutachter wird sich mit Ihnen in Verbindung setzen.</p>
+                <h5 className="font-medium text-green-800 text-sm md:text-base">Sachverständigentermin (2-3 Werktage)</h5>
+                <p className="text-green-700 text-xs md:text-sm">Ein Gutachter wird sich mit Ihnen in Verbindung setzen.</p>
               </div>
             </div>
 
             <div className="flex items-start space-x-3">
-              <div className="w-8 h-8 bg-green-600 text-white rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                <span className="text-sm font-bold">4</span>
+              <div className="w-6 h-6 md:w-8 md:h-8 bg-green-600 text-white rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                <span className="text-xs md:text-sm font-bold">4</span>
               </div>
               <div>
-                <h5 className="font-medium text-green-800">Schadensregulierung (5-10 Werktage)</h5>
-                <p className="text-green-700 text-sm">Nach dem Gutachten erfolgt die Freigabe der Reparatur und Kostenübernahme.</p>
+                <h5 className="font-medium text-green-800 text-sm md:text-base">Schadensregulierung (5-10 Werktage)</h5>
+                <p className="text-green-700 text-xs md:text-sm">Nach dem Gutachten erfolgt die Freigabe der Reparatur und Kostenübernahme.</p>
               </div>
             </div>
           </div>
