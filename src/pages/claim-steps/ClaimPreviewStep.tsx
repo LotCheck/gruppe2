@@ -24,22 +24,12 @@ const ClaimPreviewStep = () => {
   };
 
   const handleSubmit = () => {
-    // Generate claim ID and redirect to status page
+    // Generate claim ID
     const claimId = `CL-${Date.now()}`;
     localStorage.setItem('currentClaimId', claimId);
     
-    // Clear the form data
-    localStorage.removeItem('claimDescription');
-    localStorage.removeItem('claimPhotos');
-    localStorage.removeItem('claimLocation');
-    localStorage.removeItem('claimDateTime');
-    localStorage.removeItem('claimEstimatedCost');
-    localStorage.removeItem('claimSeverity');
-    localStorage.removeItem('claimRecommendation');
-    localStorage.removeItem('claimShouldReport');
-    
-    // Navigate to the main claim page which will show status
-    navigate('/claim-report', { state: { claimId } });
+    // Navigate to success page instead of clearing data immediately
+    navigate('/claim-report/success', { state: { claimId } });
   };
 
   return (
