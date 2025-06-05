@@ -1,8 +1,9 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { ArrowLeft, Mic, MicOff, Bot, Upload, FileText, Heart, Camera, Image, X, Check, User } from 'lucide-react';
+import { ArrowLeft, Mic, MicOff, Bot, Upload, FileText, Heart, Camera, Image, X, Check, User, Play } from 'lucide-react';
 
 interface Message {
   id: string;
@@ -18,7 +19,7 @@ interface UploadedPhoto {
   name: string;
 }
 
-type ConversationStep = 'initial' | 'location_time' | 'other_parties' | 'upload_options' | 'photo_upload' | 'completed';
+type ConversationStep = 'initial' | 'location_time' | 'other_parties' | 'upload_options' | 'photo_upload' | 'confirmation' | 'slideshow' | 'slideshow_confirm' | 'completed';
 
 const VoiceClaimReport = () => {
   const navigate = useNavigate();
@@ -37,6 +38,9 @@ const VoiceClaimReport = () => {
   const [currentStep, setCurrentStep] = useState<ConversationStep>('initial');
   const [showUploadOptions, setShowUploadOptions] = useState(false);
   const [showPhotoUpload, setShowPhotoUpload] = useState(false);
+  const [showLoadingBubble, setShowLoadingBubble] = useState(false);
+  const [showSlideshow, setShowSlideshow] = useState(false);
+  const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
   const [uploadedPhotos, setUploadedPhotos] = useState<UploadedPhoto[]>([]);
   const [uploadSuccess, setUploadSuccess] = useState(false);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
@@ -44,17 +48,27 @@ const VoiceClaimReport = () => {
   const cameraInputRef = useRef<HTMLInputElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Mock images for upload simulation
+  // Mock images for upload simulation with ordered names
   const mockDamagePhotos = [
     {
       id: 'mock-1',
-      url: '/lovable-uploads/cf95f053-d4c1-4ab8-a77c-e4f27dccf809.png',
-      name: 'Heckschaden.jpg'
+      url: '/lovable-uploads/94ac65a8-0be7-4610-9df3-92c92481b032.png',
+      name: '01_heckschaden.jpg'
     },
     {
       id: 'mock-2', 
-      url: '/lovable-uploads/2f3a50a5-7893-430f-a79a-fc1d204207c8.png',
-      name: 'Frontschaden.jpg'
+      url: '/lovable-uploads/cafcdc7d-fe70-4a04-9b1b-cb7a56107b39.png',
+      name: '02_frontschaden.jpg'
+    },
+    {
+      id: 'mock-3',
+      url: '/lovable-uploads/d6f3f528-3e84-4b23-9037-728940a3addb.png', 
+      name: '03_seitenschaden.jpg'
+    },
+    {
+      id: 'mock-4',
+      url: '/lovable-uploads/b77fca91-2708-4ab6-b475-b7f3322e6515.png',
+      name: '04_unfallstelle.jpg'
     }
   ];
 
@@ -114,6 +128,8 @@ const VoiceClaimReport = () => {
         return "🎤 Das war heute Morgen gegen 8:30 Uhr auf der A1 Richtung Hamburg, kurz vor der Ausfahrt Harburg.";
       case 'other_parties':
         return "🎤 Ja, es war noch ein anderes Fahrzeug beteiligt. Zum Glück wurde niemand verletzt.";
+      case 'slideshow_confirm':
+        return "🎤 Ja, genau so ist der Unfall passiert.";
       default:
         return "🎤 Sprachnachricht";
     }
@@ -128,8 +144,18 @@ const VoiceClaimReport = () => {
     
     setTimeout(() => {
       setIsProcessing(false);
-      const response = getResponseForStep(currentStep);
-      addBotMessage(response);
+      
+      if (currentStep === 'slideshow_confirm') {
+        setCurrentStep('completed');
+        addBotMessage('Vielen Dank für die Bestätigung! Ihre Schadensmeldung wurde erfolgreich übermittelt. Sie erhalten in Kürze eine Bestätigung und weitere Informationen zum Bearbeitungsstatus per E-Mail.');
+        
+        setTimeout(() => {
+          navigate('/claim-report/analysis');
+        }, 3000);
+      } else {
+        const response = getResponseForStep(currentStep);
+        addBotMessage(response);
+      }
     }, 1500);
   };
 
@@ -242,16 +268,51 @@ const VoiceClaimReport = () => {
   };
 
   const handleContinueFromPhotos = () => {
-    setCurrentStep('completed');
-    addBotMessage('Vielen Dank für die Fotos! Ihre Schadensmeldung wurde erfolgreich übermittelt. Sie erhalten in Kürze eine Bestätigung und weitere Informationen zum Bearbeitungsstatus per E-Mail.');
+    setCurrentStep('confirmation');
+    setShowPhotoUpload(false);
     
-    // Navigate to analysis after a short delay
+    addBotMessage('Perfekt! Ich habe nun alle relevanten Informationen erhalten. Lassen Sie mich kurz die Unfallsequenz basierend auf Ihren Angaben und Fotos analysieren...');
+    
+    // Show loading bubble after short delay
     setTimeout(() => {
-      navigate('/claim-report/analysis');
-    }, 3000);
+      setShowLoadingBubble(true);
+    }, 1000);
+    
+    // Start slideshow after loading
+    setTimeout(() => {
+      setShowLoadingBubble(false);
+      setShowSlideshow(true);
+      startSlideshow();
+    }, 2500);
   };
 
-  const canRecord = currentStep !== 'upload_options' && currentStep !== 'photo_upload' && currentStep !== 'completed';
+  const startSlideshow = () => {
+    const sortedPhotos = [...uploadedPhotos].sort((a, b) => a.name.localeCompare(b.name));
+    let index = 0;
+    
+    const interval = setInterval(() => {
+      setCurrentSlideIndex(index);
+      index++;
+      
+      if (index >= sortedPhotos.length) {
+        clearInterval(interval);
+        // Show confirmation question after slideshow
+        setTimeout(() => {
+          setShowSlideshow(false);
+          addBotMessage('Basierend auf Ihren Angaben und den Fotos, ist der Unfall so abgelaufen, wie in der Sequenz gezeigt? Bitte bestätigen Sie, damit wir Ihre Schadensmeldung weiterleiten können.');
+          setCurrentStep('slideshow_confirm');
+        }, 500);
+      }
+    }, 200);
+  };
+
+  const canRecord = currentStep !== 'upload_options' && 
+                   currentStep !== 'photo_upload' && 
+                   currentStep !== 'confirmation' && 
+                   currentStep !== 'slideshow' && 
+                   currentStep !== 'completed';
+
+  const sortedPhotosForSlideshow = [...uploadedPhotos].sort((a, b) => a.name.localeCompare(b.name));
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
@@ -323,6 +384,55 @@ const VoiceClaimReport = () => {
                     <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
                   </div>
                   <span className="text-sm text-gray-600">Ich höre zu und verarbeite Ihre Eingabe...</span>
+                </div>
+              </Card>
+            </div>
+          )}
+
+          {/* Loading Bubble */}
+          {showLoadingBubble && (
+            <div className="flex items-start space-x-3">
+              <div className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center">
+                <Bot className="h-4 w-4" />
+              </div>
+              <Card className="p-4 bg-white border border-gray-200">
+                <div className="flex items-center space-x-3">
+                  <div className="flex space-x-1">
+                    <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
+                    <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse" style={{ animationDelay: '0.1s' }}></div>
+                    <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse" style={{ animationDelay: '0.2s' }}></div>
+                  </div>
+                  <span className="text-sm text-gray-600">Analysiere Unfallsequenz...</span>
+                </div>
+              </Card>
+            </div>
+          )}
+
+          {/* Slideshow */}
+          {showSlideshow && sortedPhotosForSlideshow.length > 0 && (
+            <div className="flex items-start space-x-3">
+              <div className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center">
+                <Bot className="h-4 w-4" />
+              </div>
+              <Card className="p-4 bg-white border border-gray-200">
+                <div className="space-y-3">
+                  <div className="flex items-center space-x-2 mb-2">
+                    <Play className="h-4 w-4 text-blue-600" />
+                    <span className="text-sm font-medium text-gray-700">Unfallsequenz</span>
+                  </div>
+                  <div className="relative">
+                    <img
+                      src={sortedPhotosForSlideshow[currentSlideIndex]?.url}
+                      alt={`Unfallbild ${currentSlideIndex + 1}`}
+                      className="w-full h-48 object-cover rounded-md border border-gray-200"
+                    />
+                    <div className="absolute bottom-2 right-2 bg-black bg-opacity-50 text-white text-xs px-2 py-1 rounded">
+                      {currentSlideIndex + 1} / {sortedPhotosForSlideshow.length}
+                    </div>
+                  </div>
+                  <div className="text-xs text-gray-500">
+                    {sortedPhotosForSlideshow[currentSlideIndex]?.name}
+                  </div>
                 </div>
               </Card>
             </div>
