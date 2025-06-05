@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -10,6 +9,8 @@ interface Message {
   type: 'bot' | 'user';
   content: string;
   timestamp: Date;
+  slideshow?: UploadedPhoto[];
+  photos?: UploadedPhoto[];
 }
 
 interface UploadedPhoto {
@@ -39,8 +40,6 @@ const VoiceClaimReport = () => {
   const [showUploadOptions, setShowUploadOptions] = useState(false);
   const [showPhotoUpload, setShowPhotoUpload] = useState(false);
   const [showLoadingBubble, setShowLoadingBubble] = useState(false);
-  const [showSlideshow, setShowSlideshow] = useState(false);
-  const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
   const [uploadedPhotos, setUploadedPhotos] = useState<UploadedPhoto[]>([]);
   const [uploadSuccess, setUploadSuccess] = useState(false);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
@@ -80,12 +79,14 @@ const VoiceClaimReport = () => {
     scrollToBottom();
   }, [messages]);
 
-  const addBotMessage = (content: string) => {
+  const addBotMessage = (content: string, slideshow?: UploadedPhoto[], photos?: UploadedPhoto[]) => {
     const newMessage: Message = {
       id: Date.now().toString(),
       type: 'bot',
       content,
-      timestamp: new Date()
+      timestamp: new Date(),
+      slideshow,
+      photos
     };
     setMessages(prev => [...prev, newMessage]);
   };
@@ -271,6 +272,10 @@ const VoiceClaimReport = () => {
     setCurrentStep('confirmation');
     setShowPhotoUpload(false);
     
+    // Add uploaded photos to chat history
+    const sortedPhotos = [...uploadedPhotos].sort((a, b) => a.name.localeCompare(b.name));
+    addBotMessage('Hier sind die hochgeladenen Fotos:', undefined, sortedPhotos);
+    
     addBotMessage('Perfekt! Ich habe nun alle relevanten Informationen erhalten. Lassen Sie mich kurz die Unfallsequenz basierend auf Ihren Angaben und Fotos analysieren...');
     
     // Show loading bubble after short delay
@@ -281,29 +286,21 @@ const VoiceClaimReport = () => {
     // Start slideshow after loading
     setTimeout(() => {
       setShowLoadingBubble(false);
-      setShowSlideshow(true);
       startSlideshow();
     }, 2500);
   };
 
   const startSlideshow = () => {
     const sortedPhotos = [...uploadedPhotos].sort((a, b) => a.name.localeCompare(b.name));
-    let index = 0;
     
-    const interval = setInterval(() => {
-      setCurrentSlideIndex(index);
-      index++;
-      
-      if (index >= sortedPhotos.length) {
-        clearInterval(interval);
-        // Show confirmation question after slideshow
-        setTimeout(() => {
-          setShowSlideshow(false);
-          addBotMessage('Basierend auf Ihren Angaben und den Fotos, ist der Unfall so abgelaufen, wie in der Sequenz gezeigt? Bitte bestätigen Sie, damit wir Ihre Schadensmeldung weiterleiten können.');
-          setCurrentStep('slideshow_confirm');
-        }, 500);
-      }
-    }, 200);
+    // Add slideshow to chat history
+    addBotMessage('Basierend auf Ihren Angaben und den Fotos, ist der Unfall so abgelaufen:', sortedPhotos);
+    
+    // Show confirmation question after slideshow
+    setTimeout(() => {
+      addBotMessage('Bestätigen Sie bitte, dass der Unfall so abgelaufen ist, wie in der Sequenz gezeigt, damit wir Ihre Schadensmeldung weiterleiten können.');
+      setCurrentStep('slideshow_confirm');
+    }, 1000);
   };
 
   const canRecord = currentStep !== 'upload_options' && 
@@ -311,8 +308,6 @@ const VoiceClaimReport = () => {
                    currentStep !== 'confirmation' && 
                    currentStep !== 'slideshow' && 
                    currentStep !== 'completed';
-
-  const sortedPhotosForSlideshow = [...uploadedPhotos].sort((a, b) => a.name.localeCompare(b.name));
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
@@ -360,6 +355,54 @@ const VoiceClaimReport = () => {
                   : 'bg-blue-50 border-blue-200'
               }`}>
                 <p className="text-sm text-gray-900">{message.content}</p>
+                
+                {/* Uploaded Photos Display */}
+                {message.photos && message.photos.length > 0 && (
+                  <div className="mt-3">
+                    <div className="grid grid-cols-3 gap-2">
+                      {message.photos.map((photo) => (
+                        <div key={photo.id} className="relative">
+                          <img
+                            src={photo.url}
+                            alt={photo.name}
+                            className="w-full h-16 object-cover rounded-md border border-gray-200"
+                          />
+                          <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white text-xs p-1 rounded-b-md truncate">
+                            {photo.name}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Slideshow Display */}
+                {message.slideshow && message.slideshow.length > 0 && (
+                  <div className="mt-3">
+                    <div className="flex items-center space-x-2 mb-2">
+                      <Play className="h-4 w-4 text-blue-600" />
+                      <span className="text-sm font-medium text-gray-700">Unfallsequenz</span>
+                    </div>
+                    <div className="grid grid-cols-2 gap-2">
+                      {message.slideshow.map((photo, index) => (
+                        <div key={photo.id} className="relative">
+                          <img
+                            src={photo.url}
+                            alt={`Unfallbild ${index + 1}`}
+                            className="w-full h-24 object-cover rounded-md border border-gray-200"
+                          />
+                          <div className="absolute bottom-1 right-1 bg-black bg-opacity-50 text-white text-xs px-1 py-0.5 rounded">
+                            {index + 1}
+                          </div>
+                          <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white text-xs p-1 rounded-b-md truncate">
+                            {photo.name}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
                 <div className="text-xs text-gray-500 mt-2">
                   {message.timestamp.toLocaleTimeString('de-DE', { 
                     hour: '2-digit', 
@@ -403,36 +446,6 @@ const VoiceClaimReport = () => {
                     <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse" style={{ animationDelay: '0.2s' }}></div>
                   </div>
                   <span className="text-sm text-gray-600">Analysiere Unfallsequenz...</span>
-                </div>
-              </Card>
-            </div>
-          )}
-
-          {/* Slideshow */}
-          {showSlideshow && sortedPhotosForSlideshow.length > 0 && (
-            <div className="flex items-start space-x-3">
-              <div className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center">
-                <Bot className="h-4 w-4" />
-              </div>
-              <Card className="p-4 bg-white border border-gray-200">
-                <div className="space-y-3">
-                  <div className="flex items-center space-x-2 mb-2">
-                    <Play className="h-4 w-4 text-blue-600" />
-                    <span className="text-sm font-medium text-gray-700">Unfallsequenz</span>
-                  </div>
-                  <div className="relative">
-                    <img
-                      src={sortedPhotosForSlideshow[currentSlideIndex]?.url}
-                      alt={`Unfallbild ${currentSlideIndex + 1}`}
-                      className="w-full h-48 object-cover rounded-md border border-gray-200"
-                    />
-                    <div className="absolute bottom-2 right-2 bg-black bg-opacity-50 text-white text-xs px-2 py-1 rounded">
-                      {currentSlideIndex + 1} / {sortedPhotosForSlideshow.length}
-                    </div>
-                  </div>
-                  <div className="text-xs text-gray-500">
-                    {sortedPhotosForSlideshow[currentSlideIndex]?.name}
-                  </div>
                 </div>
               </Card>
             </div>
