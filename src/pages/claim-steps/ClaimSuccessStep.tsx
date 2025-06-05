@@ -61,35 +61,15 @@ const ClaimSuccessStep = () => {
                 <div className="bg-green-100 border-2 border-green-300 rounded-lg p-4">
                   <span className="text-2xl font-bold text-green-800">{claimId}</span>
                 </div>
-                <p className="text-sm text-gray-600 mt-2">
-                  Notieren Sie sich diese Nummer für Ihre Unterlagen
-                </p>
+                
               </div>
 
               <div className="space-y-4">
-                <div className="flex items-center space-x-3 p-3 bg-green-50 rounded-lg">
-                  <CheckCircle className="h-5 w-5 text-green-600" />
-                  <div>
-                    <p className="font-medium text-green-800">Automatische Weiterleitung</p>
-                    <p className="text-sm text-green-600">Wird an Ihre Versicherung übermittelt</p>
-                  </div>
-                </div>
+                
 
-                <div className="flex items-center space-x-3 p-3 bg-blue-50 rounded-lg">
-                  <Clock className="h-5 w-5 text-blue-600" />
-                  <div>
-                    <p className="font-medium text-blue-800">Bearbeitungszeit</p>
-                    <p className="text-sm text-blue-600">Sachbearbeiter kontaktiert Sie innerhalb von 24h</p>
-                  </div>
-                </div>
+                
 
-                <div className="flex items-center space-x-3 p-3 bg-orange-50 rounded-lg">
-                  <MessageSquare className="h-5 w-5 text-orange-600" />
-                  <div>
-                    <p className="font-medium text-orange-800">E-Mail Bestätigung</p>
-                    <p className="text-sm text-orange-600">Bestätigung wird an Ihre E-Mail-Adresse gesendet</p>
-                  </div>
-                </div>
+                
               </div>
             </CardContent>
           </Card>
@@ -132,10 +112,7 @@ const ClaimSuccessStep = () => {
 
           {/* Action Buttons */}
           <div className="space-y-3">
-            <Button onClick={handleViewStatus} className="w-full bg-blue-600 hover:bg-blue-700 py-3 text-lg" size="lg">
-              <FileText className="h-5 w-5 mr-2" />
-              Schadenstatus verfolgen
-            </Button>
+            
             
             
             
