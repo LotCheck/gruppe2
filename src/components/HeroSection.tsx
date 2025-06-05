@@ -11,20 +11,21 @@ const HeroSection = () => {
           <div className="text-center lg:text-left">
             <h1 className="text-4xl lg:text-6xl font-bold text-gray-900 mb-6 leading-tight">
               KFZ-Versicherung
-              <span className="text-blue-600 block">neu gedacht</span>
+              <span className="block" style={{ color: '#022D94' }}>neu gedacht</span>
             </h1>
             <p className="text-xl text-gray-600 mb-8 leading-relaxed">
               Verwalten Sie Ihre Autoversicherung komplett digital. Schnell, transparent und 
               immer in Ihrer Hosentasche - mit der AutoSchild App.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-              <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-lg px-8 py-4">
+              <Button size="lg" style={{ backgroundColor: '#064E9C' }} className="hover:opacity-90 text-white text-lg px-8 py-4">
                 Jetzt App herunterladen
               </Button>
               <Button 
                 size="lg" 
                 variant="outline" 
-                className="text-blue-600 border-blue-600 hover:bg-blue-50 text-lg px-8 py-4"
+                className="text-lg px-8 py-4"
+                style={{ color: '#022D94', borderColor: '#022D94' }}
               >
                 Mehr erfahren
               </Button>
@@ -53,7 +54,7 @@ const HeroSection = () => {
               {/* Phone mockup */}
               <div className="absolute inset-0 bg-gradient-to-br from-gray-900 to-gray-800 rounded-[3rem] shadow-2xl transform rotate-2">
                 <div className="absolute inset-2 bg-white rounded-[2.5rem] overflow-hidden">
-                  <div className="h-full bg-gradient-to-br from-blue-600 to-blue-800 flex items-center justify-center">
+                  <div className="h-full flex items-center justify-center" style={{ background: `linear-gradient(135deg, #022D94 0%, #064E9C 100%)` }}>
                     <div className="text-center text-white">
                       <Smartphone className="h-16 w-16 mx-auto mb-4 opacity-80" />
                       <div className="text-lg font-semibold">AutoSchild</div>
@@ -65,7 +66,7 @@ const HeroSection = () => {
               
               {/* Floating elements */}
               <div className="absolute -top-4 -left-4 bg-white rounded-xl shadow-lg p-4 animate-float">
-                <Car className="h-8 w-8 text-blue-600" />
+                <Car className="h-8 w-8" style={{ color: '#022D94' }} />
               </div>
               <div className="absolute -bottom-4 -right-4 bg-white rounded-xl shadow-lg p-4 animate-float" style={{animationDelay: '1s'}}>
                 <Shield className="h-8 w-8 text-green-600" />

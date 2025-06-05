@@ -38,7 +38,8 @@ const ClaimReportButton = () => {
       <Button 
         onClick={() => navigate('/claim-report')}
         size="lg"
-        className="bg-red-600 hover:bg-red-700 text-white px-8 py-3 group"
+        className="text-white px-8 py-3 group hover:opacity-90"
+        style={{ backgroundColor: '#064E9C' }}
       >
         <FileText className="h-5 w-5 mr-2" />
         Jetzt Schaden melden

@@ -4,7 +4,7 @@ import { ArrowRight, Download } from 'lucide-react';
 
 const CTASection = () => {
   return (
-    <section className="py-20 bg-gradient-to-r from-blue-600 to-blue-800">
+    <section className="py-20" style={{ background: `linear-gradient(135deg, #022D94 0%, #064E9C 100%)` }}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center text-white">
           <h2 className="text-3xl lg:text-4xl font-bold mb-6">
@@ -18,7 +18,8 @@ const CTASection = () => {
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <Button 
               size="lg" 
-              className="bg-white text-blue-600 hover:bg-gray-100 text-lg px-8 py-4 group"
+              className="bg-white hover:bg-gray-100 text-lg px-8 py-4 group"
+              style={{ color: '#022D94' }}
             >
               <Download className="h-5 w-5 mr-2 group-hover:animate-bounce" />
               App herunterladen
@@ -26,7 +27,8 @@ const CTASection = () => {
             <Button 
               size="lg" 
               variant="outline" 
-              className="border-white text-white hover:bg-white hover:text-blue-600 text-lg px-8 py-4 group"
+              className="border-white text-white hover:bg-white text-lg px-8 py-4 group"
+              style={{ '--tw-hover-bg': 'white', '--tw-hover-text': '#022D94' } as any}
             >
               Kostenlos registrieren
               <ArrowRight className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" />

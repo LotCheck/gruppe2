@@ -56,7 +56,8 @@ const ClaimVoiceStep = () => {
             </Button>
             <Button 
               onClick={() => navigate('/claim-report/photos')}
-              className="bg-blue-600 hover:bg-blue-700 flex-1 ml-2 md:flex-none md:ml-0 md:px-8"
+              className="text-white flex-1 ml-2 md:flex-none md:ml-0 md:px-8 hover:opacity-90"
+              style={{ backgroundColor: '#064E9C' }}
               disabled={!currentDescription}
             >
               <span className="hidden sm:inline">Weiter zu Fotos</span>

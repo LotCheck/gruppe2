@@ -76,9 +76,9 @@ const VoiceInput = ({ onDescriptionUpdate, currentDescription }: VoiceInputProps
             w-20 h-20 md:w-24 md:h-24 mx-auto mb-4 rounded-full flex items-center justify-center transition-all duration-300
             ${isRecording 
               ? 'bg-red-500 animate-pulse shadow-lg shadow-red-200' 
-              : 'bg-blue-600 hover:bg-blue-700 active:bg-blue-800'
+              : 'hover:opacity-90 active:scale-95'
             }
-          `}>
+          `} style={{ backgroundColor: isRecording ? '#ef4444' : '#064E9C' }}>
             <Button
               variant="ghost"
               size="lg"
@@ -139,15 +139,15 @@ const VoiceInput = ({ onDescriptionUpdate, currentDescription }: VoiceInputProps
       {/* AI Suggestions - Mobile Optimized */}
       {transcription && (
         <Card className="p-3 md:p-4 bg-blue-50 border-blue-200">
-          <h4 className="font-medium text-blue-800 mb-3 text-sm md:text-base">KI-Assistent Fragen</h4>
+          <h4 className="font-medium mb-3 text-sm md:text-base" style={{ color: '#022D94' }}>KI-Assistent Fragen</h4>
           <div className="space-y-2 flex flex-col">
-            <Button variant="outline" size="sm" className="text-blue-700 border-blue-300 hover:bg-blue-100 text-xs md:text-sm w-full justify-start">
+            <Button variant="outline" size="sm" className="text-xs md:text-sm w-full justify-start hover:opacity-90" style={{ color: '#022D94', borderColor: '#022D94' }}>
               Waren andere Fahrzeuge beteiligt?
             </Button>
-            <Button variant="outline" size="sm" className="text-blue-700 border-blue-300 hover:bg-blue-100 text-xs md:text-sm w-full justify-start">
+            <Button variant="outline" size="sm" className="text-xs md:text-sm w-full justify-start hover:opacity-90" style={{ color: '#022D94', borderColor: '#022D94' }}>
               Gab es Verletzte?
             </Button>
-            <Button variant="outline" size="sm" className="text-blue-700 border-blue-300 hover:bg-blue-100 text-xs md:text-sm w-full justify-start">
+            <Button variant="outline" size="sm" className="text-xs md:text-sm w-full justify-start hover:opacity-90" style={{ color: '#022D94', borderColor: '#022D94' }}>
               Haben Sie die Polizei gerufen?
             </Button>
           </div>
