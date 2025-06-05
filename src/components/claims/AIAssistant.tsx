@@ -1,10 +1,8 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { CheckCircle, AlertTriangle, TrendingUp, Clock, Euro } from 'lucide-react';
-
 interface ClaimData {
   description: string;
   photos: string[];
@@ -15,16 +13,16 @@ interface ClaimData {
   recommendation: string;
   shouldReport: boolean;
 }
-
 interface AIAssistantProps {
   claimData: ClaimData;
   onAnalysisUpdate: (updates: Partial<ClaimData>) => void;
 }
-
-const AIAssistant = ({ claimData, onAnalysisUpdate }: AIAssistantProps) => {
+const AIAssistant = ({
+  claimData,
+  onAnalysisUpdate
+}: AIAssistantProps) => {
   const [analyzing, setAnalyzing] = useState(true);
   const [analysis, setAnalysis] = useState<any>(null);
-
   useEffect(() => {
     // Simulate AI analysis
     setTimeout(() => {
@@ -51,14 +49,8 @@ const AIAssistant = ({ claimData, onAnalysisUpdate }: AIAssistantProps) => {
           repair: '5-7 Werktage',
           totalDuration: '1-2 Wochen'
         },
-        nextSteps: [
-          'Schadensmeldung bei Versicherung einreichen',
-          'Kostenvoranschlag von Partnerwerkstatt einholen',
-          'Gutachter-Termin vereinbaren (wird automatisch organisiert)',
-          'Reparaturfreigabe abwarten'
-        ]
+        nextSteps: ['Schadensmeldung bei Versicherung einreichen', 'Kostenvoranschlag von Partnerwerkstatt einholen', 'Gutachter-Termin vereinbaren (wird automatisch organisiert)', 'Reparaturfreigabe abwarten']
       };
-
       setAnalysis(mockAnalysis);
       onAnalysisUpdate({
         estimatedCost: mockAnalysis.totalEstimatedCost,
@@ -68,10 +60,8 @@ const AIAssistant = ({ claimData, onAnalysisUpdate }: AIAssistantProps) => {
       setAnalyzing(false);
     }, 3000);
   }, [claimData, onAnalysisUpdate]);
-
   if (analyzing) {
-    return (
-      <div className="text-center py-12">
+    return <div className="text-center py-12">
         <div className="animate-spin w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full mx-auto mb-6"></div>
         <h3 className="text-xl font-semibold mb-4">KI analysiert Ihren Schaden...</h3>
         <div className="space-y-2 text-gray-600">
@@ -80,12 +70,9 @@ const AIAssistant = ({ claimData, onAnalysisUpdate }: AIAssistantProps) => {
           <p>✓ Versicherungsschutz geprüft</p>
           <p className="animate-pulse">⏳ Kostenschätzung und Empfehlungen werden erstellt...</p>
         </div>
-      </div>
-    );
+      </div>;
   }
-
-  return (
-    <div className="space-y-6">
+  return <div className="space-y-6">
       <div className="text-center">
         <h3 className="text-xl font-semibold mb-2">KI-Analyse Ergebnis</h3>
         <p className="text-gray-600">
@@ -97,11 +84,7 @@ const AIAssistant = ({ claimData, onAnalysisUpdate }: AIAssistantProps) => {
       <Card className={`border-2 ${analysis.recommendation.shouldReport ? 'border-green-500 bg-green-50' : 'border-yellow-500 bg-yellow-50'}`}>
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
-            {analysis.recommendation.shouldReport ? (
-              <CheckCircle className="h-6 w-6 text-green-600" />
-            ) : (
-              <AlertTriangle className="h-6 w-6 text-yellow-600" />
-            )}
+            {analysis.recommendation.shouldReport ? <CheckCircle className="h-6 w-6 text-green-600" /> : <AlertTriangle className="h-6 w-6 text-yellow-600" />}
             <span className={analysis.recommendation.shouldReport ? 'text-green-800' : 'text-yellow-800'}>
               {analysis.recommendation.shouldReport ? 'Schaden melden empfohlen' : 'Meldung nicht empfohlen'}
             </span>
@@ -180,55 +163,7 @@ const AIAssistant = ({ claimData, onAnalysisUpdate }: AIAssistantProps) => {
       </Card>
 
       {/* Timeline */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <Clock className="h-5 w-5" />
-            <span>Voraussichtlicher Ablauf</span>
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-            <div className="text-center">
-              <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-2">
-                <span className="text-blue-600 font-bold">1</span>
-              </div>
-              <h4 className="font-medium mb-1">Bearbeitung</h4>
-              <p className="text-sm text-gray-600">{analysis.timeline.processing}</p>
-            </div>
-            <div className="text-center">
-              <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-2">
-                <span className="text-blue-600 font-bold">2</span>
-              </div>
-              <h4 className="font-medium mb-1">Reparatur</h4>
-              <p className="text-sm text-gray-600">{analysis.timeline.repair}</p>
-            </div>
-            <div className="text-center">
-              <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-2">
-                <CheckCircle className="h-6 w-6 text-green-600" />
-              </div>
-              <h4 className="font-medium mb-1">Abschluss</h4>
-              <p className="text-sm text-gray-600">{analysis.timeline.totalDuration}</p>
-            </div>
-          </div>
-          
-          <div className="bg-gray-50 p-4 rounded-md">
-            <h5 className="font-medium mb-3">Nächste Schritte:</h5>
-            <ul className="space-y-2">
-              {analysis.nextSteps.map((step: string, index: number) => (
-                <li key={index} className="flex items-start space-x-2 text-sm">
-                  <div className="w-5 h-5 bg-blue-600 text-white rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <span className="text-xs">{index + 1}</span>
-                  </div>
-                  <span>{step}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
-  );
+      
+    </div>;
 };
-
 export default AIAssistant;
