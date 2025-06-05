@@ -73,6 +73,42 @@ const VoiceClaimReport = () => {
     scrollToBottom();
   }, [messages]);
 
+  // Force scroll when upload-related state changes
+  useEffect(() => {
+    if (showPhotoUpload || uploadedPhotos.length > 0) {
+      setTimeout(() => {
+        scrollToBottom();
+      }, 100);
+    }
+  }, [showPhotoUpload, uploadedPhotos.length]);
+
+  // Force scroll when loading bubble appears/disappears
+  useEffect(() => {
+    if (showLoadingBubble) {
+      setTimeout(() => {
+        scrollToBottom();
+      }, 100);
+    }
+  }, [showLoadingBubble]);
+
+  // Force scroll when upload options appear
+  useEffect(() => {
+    if (showUploadOptions) {
+      setTimeout(() => {
+        scrollToBottom();
+      }, 100);
+    }
+  }, [showUploadOptions]);
+
+  // Force scroll when confirmation button appears
+  useEffect(() => {
+    if (showConfirmButton) {
+      setTimeout(() => {
+        scrollToBottom();
+      }, 100);
+    }
+  }, [showConfirmButton]);
+
   const addBotMessage = (content: string, slideshow?: UploadedPhoto[], photos?: UploadedPhoto[], isVideo?: boolean) => {
     const newMessage: Message = {
       id: Date.now().toString(),
@@ -84,6 +120,11 @@ const VoiceClaimReport = () => {
       isVideo
     };
     setMessages(prev => [...prev, newMessage]);
+    
+    // Force scroll after adding message
+    setTimeout(() => {
+      scrollToBottom();
+    }, 50);
   };
 
   const addUserMessage = (content: string, isVoice: boolean = false, duration?: number) => {
@@ -96,6 +137,11 @@ const VoiceClaimReport = () => {
       voiceDuration: duration
     };
     setMessages(prev => [...prev, newMessage]);
+    
+    // Force scroll after adding message
+    setTimeout(() => {
+      scrollToBottom();
+    }, 50);
   };
 
   const getResponseForStep = (step: ConversationStep): string => {
