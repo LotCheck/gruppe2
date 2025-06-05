@@ -45,6 +45,7 @@ const VoiceClaimReport = () => {
   const [showLoadingBubble, setShowLoadingBubble] = useState(false);
   const [uploadedPhotos, setUploadedPhotos] = useState<UploadedPhoto[]>([]);
   const [uploadSuccess, setUploadSuccess] = useState(false);
+  const [showConfirmButton, setShowConfirmButton] = useState(false);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
@@ -316,13 +317,25 @@ const VoiceClaimReport = () => {
     setTimeout(() => {
       addBotMessage('Bestätigen Sie bitte, dass der Unfall so abgelaufen ist, wie in der Sequenz gezeigt, damit wir Ihre Schadensmeldung weiterleiten können.');
       setCurrentStep('slideshow_confirm');
+      setShowConfirmButton(true);
     }, 1000);
+  };
+
+  const handleConfirmAccident = () => {
+    setShowConfirmButton(false);
+    setCurrentStep('completed');
+    addBotMessage('Vielen Dank für die Bestätigung! Ihre Schadensmeldung wurde erfolgreich übermittelt. Sie erhalten in Kürze eine Bestätigung und weitere Informationen zum Bearbeitungsstatus per E-Mail.');
+    
+    setTimeout(() => {
+      navigate('/claim-report/analysis');
+    }, 3000);
   };
 
   const canRecord = currentStep !== 'upload_options' && 
                    currentStep !== 'photo_upload' && 
                    currentStep !== 'confirmation' && 
                    currentStep !== 'slideshow' && 
+                   currentStep !== 'slideshow_confirm' &&
                    currentStep !== 'completed';
 
   return (
@@ -714,6 +727,18 @@ const VoiceClaimReport = () => {
           </div>
         </div>
       </div>
+      
+      {/* Confirmation Button */}
+      {showConfirmButton && (
+        <div className="flex justify-center">
+          <Button
+            onClick={handleConfirmAccident}
+            className="bg-green-600 hover:bg-green-700 text-white px-8 py-3 text-lg font-medium"
+          >
+            Bestätigen
+          </Button>
+        </div>
+      )}
     </div>
   );
 };
