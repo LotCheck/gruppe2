@@ -644,44 +644,47 @@ const VoiceClaimReport = () => {
           <div ref={messagesEndRef} />
         </div>
 
-        {/* Voice Input Interface - Compact CTA */}
+        {/* Voice Input Interface - Full Width CTA */}
         {canRecord && (
-          <Card className="p-3 bg-white border-0 shadow-lg">
-            <div className="text-center">
+          <Card className="p-4 bg-white border-0 shadow-lg">
+            <div className="space-y-3">
               
-              {/* Compact Microphone Button */}
-              <div className="relative mb-2">
-                <Button
-                  onClick={isRecording ? stopRecording : startRecording}
-                  disabled={isProcessing}
-                  className={`
-                    h-12 px-6 rounded-full transition-all duration-300 flex items-center justify-center space-x-2
-                    ${isRecording 
-                      ? 'bg-red-500 hover:bg-red-600 animate-pulse text-white' 
-                      : 'bg-blue-600 hover:bg-blue-700 text-white'
-                    }
-                  `}
-                >
-                  {isRecording ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
-                  <span className="text-sm font-medium">
-                    {isRecording ? 'Stoppen' : 'Sprechen'}
-                  </span>
-                </Button>
+              {/* Full Width Microphone Button */}
+              <Button
+                onClick={isRecording ? stopRecording : startRecording}
+                disabled={isProcessing}
+                className={`
+                  w-full h-12 rounded-full transition-all duration-300 flex items-center justify-center space-x-2
+                  ${isRecording 
+                    ? 'bg-red-500 hover:bg-red-600 animate-pulse text-white' 
+                    : 'bg-blue-600 hover:bg-blue-700 text-white'
+                  }
+                `}
+              >
+                {isRecording ? <MicOff className="h-5 w-5" /> : <Mic className="h-5 w-5" />}
+                <span className="text-sm font-medium">
+                  {isRecording ? 'Stoppen' : 'Sprechen'}
+                </span>
+              </Button>
+
+              {/* Centered Text Below */}
+              <div className="text-center">
+                <span className="text-xs text-gray-500">Tippen Sie, um zu sprechen.</span>
               </div>
 
               {/* Status Text */}
-              <div className="mb-2">
-                {isRecording ? (
-                  <div className="flex items-center justify-center space-x-2">
-                    <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
-                    <span className="text-xs text-red-600 font-medium">Ich höre zu...</span>
-                  </div>
-                ) : isProcessing ? (
-                  <span className="text-xs text-blue-600">Verarbeite Ihre Nachricht...</span>
-                ) : (
-                  <span className="text-xs text-gray-600">Tippen Sie, um zu sprechen</span>
-                )}
-              </div>
+              {(isRecording || isProcessing) && (
+                <div className="text-center">
+                  {isRecording ? (
+                    <div className="flex items-center justify-center space-x-2">
+                      <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+                      <span className="text-xs text-red-600 font-medium">Ich höre zu...</span>
+                    </div>
+                  ) : isProcessing ? (
+                    <span className="text-xs text-blue-600">Verarbeite Ihre Nachricht...</span>
+                  ) : null}
+                </div>
+              )}
 
               {/* Voice Waves Animation */}
               {isRecording && (
