@@ -32,8 +32,8 @@ const StepNavigation = ({
       <div className="block md:hidden mb-4">
         
         <div className="mt-2 text-center">
-          <h2 className="text-lg font-bold text-gray-900">{steps[currentStep].shortTitle}</h2>
-          <p className="text-sm text-gray-600">Schritt {currentStep + 1} von {steps.length}</p>
+          
+          
         </div>
       </div>
 
