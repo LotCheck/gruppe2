@@ -24,16 +24,6 @@ const ClaimPreviewStep = () => {
     };
   };
 
-  // Get photos from voice claim if available
-  const getVoiceClaimData = () => {
-    const voiceClaimData = localStorage.getItem('claimData');
-    if (voiceClaimData) {
-      const parsedData = JSON.parse(voiceClaimData);
-      return parsedData.photos || [];
-    }
-    return [];
-  };
-
   const handleSubmit = () => {
     // Generate claim ID and redirect to status page
     const claimId = `CL-${Date.now()}`;
@@ -52,12 +42,6 @@ const ClaimPreviewStep = () => {
     // Navigate to the main claim page which will show status
     navigate('/claim-report', { state: { claimId } });
   };
-
-  const claimData = getClaimData();
-  const voicePhotos = getVoiceClaimData();
-  
-  // Combine photos from both sources
-  const allPhotos = [...claimData.photos, ...voicePhotos];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
@@ -79,7 +63,7 @@ const ClaimPreviewStep = () => {
 
         <Card className="mb-4 md:mb-6 shadow-lg border-0 max-w-4xl mx-auto">
           <CardContent className="p-4 md:p-8">
-            <ClaimPreview claimData={{...claimData, photos: allPhotos}} />
+            <ClaimPreview claimData={getClaimData()} />
           </CardContent>
         </Card>
 
