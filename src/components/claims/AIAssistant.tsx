@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -109,7 +108,7 @@ const AIAssistant = ({
         </CardContent>
       </Card>
 
-      {/* Compact Cost Analysis */}
+      {/* Compact Cost Analysis - Mobile Optimized */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
@@ -118,18 +117,18 @@ const AIAssistant = ({
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-3 gap-4 text-center">
-            <div>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-4 text-center">
+            <div className="space-y-1">
               <p className="text-sm text-gray-600">Geschätzte Kosten</p>
-              <p className="text-xl font-bold text-blue-600">€{analysis.totalEstimatedCost}</p>
+              <p className="text-2xl sm:text-xl font-bold text-blue-600">€{analysis.totalEstimatedCost}</p>
             </div>
-            <div>
+            <div className="space-y-1">
               <p className="text-sm text-gray-600">Ihre Selbstbeteiligung</p>
-              <p className="text-xl font-bold text-orange-600">€{analysis.deductible}</p>
+              <p className="text-2xl sm:text-xl font-bold text-orange-600">€{analysis.deductible}</p>
             </div>
-            <div>
+            <div className="space-y-1">
               <p className="text-sm text-gray-600">Ihre Ersparnis</p>
-              <p className="text-xl font-bold text-green-600">€{analysis.totalEstimatedCost - analysis.deductible}</p>
+              <p className="text-2xl sm:text-xl font-bold text-green-600">€{analysis.totalEstimatedCost - analysis.deductible}</p>
             </div>
           </div>
         </CardContent>
