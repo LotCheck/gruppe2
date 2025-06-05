@@ -1,69 +1,125 @@
 
 import Header from '@/components/Header';
-import HeroSection from '@/components/HeroSection';
-import FeaturesSection from '@/components/FeaturesSection';
-import CTASection from '@/components/CTASection';
-import ClaimReportButton from '@/components/ClaimReportButton';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { User, Calendar, FileText, Building, Phone, Edit3, XCircle, HelpCircle } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const Index = () => {
+  const navigate = useNavigate();
+
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-gray-50">
       <Header />
-      <HeroSection />
       
-      {/* Claim Report Section */}
-      <section className="py-16 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="max-w-3xl mx-auto">
-            <ClaimReportButton />
-          </div>
-        </div>
-      </section>
-      
-      <FeaturesSection />
-      <CTASection />
-      
-      {/* Footer */}
-      <footer className="bg-gray-900 text-white py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid md:grid-cols-4 gap-8">
-            <div className="col-span-2">
-              <div className="flex items-center space-x-2 mb-4">
-                <div className="w-8 h-8 bg-blue-600 rounded flex items-center justify-center">
-                  <span className="text-white font-bold text-sm">AS</span>
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Contract Overview */}
+        <Card className="mb-8 shadow-lg">
+          <CardContent className="p-6">
+            <h2 className="text-2xl font-bold mb-6" style={{ color: '#333333' }}>
+              Ihre Vertragsübersicht
+            </h2>
+            
+            <div className="grid md:grid-cols-2 gap-6">
+              <div className="space-y-4">
+                <div className="flex items-center space-x-3">
+                  <User className="h-5 w-5" style={{ color: '#0563C1' }} />
+                  <div>
+                    <p className="text-sm text-gray-500">Versicherungsnehmer</p>
+                    <p className="font-medium" style={{ color: '#333333' }}>Max Mustermann</p>
+                  </div>
                 </div>
-                <span className="text-xl font-bold">AutoSchild</span>
+                
+                <div className="flex items-center space-x-3">
+                  <Calendar className="h-5 w-5" style={{ color: '#0563C1' }} />
+                  <div>
+                    <p className="text-sm text-gray-500">Versicherungsbeginn</p>
+                    <p className="font-medium" style={{ color: '#333333' }}>01.01.2024</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-center space-x-3">
+                  <FileText className="h-5 w-5" style={{ color: '#0563C1' }} />
+                  <div>
+                    <p className="text-sm text-gray-500">Tarifname</p>
+                    <p className="font-medium" style={{ color: '#333333' }}>Vollkasko Premium</p>
+                  </div>
+                </div>
               </div>
-              <p className="text-gray-400 mb-4">
-                Die moderne KFZ-Versicherung für das digitale Zeitalter. 
-                Einfach, transparent und immer für Sie da.
-              </p>
+              
+              <div className="space-y-4">
+                <div className="flex items-center space-x-3">
+                  <Building className="h-5 w-5" style={{ color: '#0563C1' }} />
+                  <div>
+                    <p className="text-sm text-gray-500">Versicherungsgesellschaft</p>
+                    <p className="font-medium" style={{ color: '#333333' }}>CHECK24 Versicherung AG</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-center space-x-3">
+                  <FileText className="h-5 w-5" style={{ color: '#0563C1' }} />
+                  <div>
+                    <p className="text-sm text-gray-500">Vertragsnummer</p>
+                    <p className="font-medium" style={{ color: '#333333' }}>KFZ-2024-001234</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-center space-x-3">
+                  <Phone className="h-5 w-5" style={{ color: '#0563C1' }} />
+                  <div>
+                    <p className="text-sm text-gray-500">Kontakt</p>
+                    <p className="font-medium" style={{ color: '#333333' }}>089 - 123 456 789</p>
+                  </div>
+                </div>
+              </div>
             </div>
-            
-            <div>
-              <h4 className="font-semibold mb-4">Produkt</h4>
-              <ul className="space-y-2 text-gray-400">
-                <li><a href="#" className="hover:text-white transition-colors">Features</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Preise</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Support</a></li>
-              </ul>
-            </div>
-            
-            <div>
-              <h4 className="font-semibold mb-4">Unternehmen</h4>
-              <ul className="space-y-2 text-gray-400">
-                <li><a href="#" className="hover:text-white transition-colors">Über uns</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Karriere</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Kontakt</a></li>
-              </ul>
-            </div>
-          </div>
+          </CardContent>
+        </Card>
+
+        {/* CTAs */}
+        <div className="space-y-4">
+          {/* Primary CTA - Schaden melden */}
+          <Button 
+            onClick={() => navigate('/claim-report')}
+            size="lg"
+            className="w-full h-16 text-lg font-semibold text-white shadow-lg hover:opacity-90"
+            style={{ backgroundColor: '#0563C1' }}
+          >
+            <FileText className="h-6 w-6 mr-3" />
+            Schaden melden
+          </Button>
           
-          <div className="border-t border-gray-800 mt-12 pt-8 text-center text-gray-400">
-            <p>&copy; 2024 AutoSchild. Alle Rechte vorbehalten.</p>
+          {/* Secondary CTAs */}
+          <div className="grid md:grid-cols-3 gap-4">
+            <Button 
+              variant="outline"
+              className="h-14 font-medium border-2 hover:bg-gray-50"
+              style={{ borderColor: '#0563C1', color: '#0563C1' }}
+            >
+              <Edit3 className="h-5 w-5 mr-2" />
+              Informationen bearbeiten
+            </Button>
+            
+            <Button 
+              variant="outline"
+              className="h-14 font-medium border-2 hover:bg-gray-50"
+              style={{ borderColor: '#0563C1', color: '#0563C1' }}
+            >
+              <XCircle className="h-5 w-5 mr-2" />
+              Vertrag kündigen
+            </Button>
+            
+            <Button 
+              variant="outline"
+              className="h-14 font-medium border-2 hover:bg-gray-50"
+              style={{ borderColor: '#0563C1', color: '#0563C1' }}
+            >
+              <HelpCircle className="h-5 w-5 mr-2" />
+              Hilfe & Support
+            </Button>
           </div>
         </div>
-      </footer>
+      </div>
     </div>
   );
 };
