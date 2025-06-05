@@ -1,9 +1,7 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { CheckCircle, FileText, Camera, MessageSquare, User, Car, Clock, MapPin, Users, AlertTriangle, Euro } from 'lucide-react';
-
 interface ClaimData {
   description: string;
   photos: string[];
@@ -14,18 +12,17 @@ interface ClaimData {
   recommendation: string;
   shouldReport: boolean;
 }
-
 interface ClaimPreviewProps {
   claimData: ClaimData;
 }
-
-const ClaimPreview = ({ claimData }: ClaimPreviewProps) => {
+const ClaimPreview = ({
+  claimData
+}: ClaimPreviewProps) => {
   const severityColors = {
     minor: 'bg-green-100 text-green-800',
-    moderate: 'bg-yellow-100 text-yellow-800', 
+    moderate: 'bg-yellow-100 text-yellow-800',
     severe: 'bg-red-100 text-red-800'
   };
-
   const severityLabels = {
     minor: 'Geringer Schaden',
     moderate: 'Mittlerer Schaden',
@@ -33,17 +30,13 @@ const ClaimPreview = ({ claimData }: ClaimPreviewProps) => {
   };
 
   // Mock data - in a real app this would come from the form or API
-  const mockThirdParties = [
-    {
-      name: "Lisa Schmidt",
-      licensePlate: "B-CD 5678",
-      insurance: "DEVK Versicherung",
-      phone: "+49 160 98765432"
-    }
-  ];
-
-  return (
-    <div className="space-y-4 md:space-y-6">
+  const mockThirdParties = [{
+    name: "Lisa Schmidt",
+    licensePlate: "B-CD 5678",
+    insurance: "DEVK Versicherung",
+    phone: "+49 160 98765432"
+  }];
+  return <div className="space-y-4 md:space-y-6">
       <div className="text-center px-4">
         <h3 className="text-xl md:text-2xl font-bold mb-2">Zusammenfassung</h3>
         <p className="text-sm md:text-base text-gray-600">
@@ -70,8 +63,8 @@ const ClaimPreview = ({ claimData }: ClaimPreviewProps) => {
               <p className="font-medium text-sm md:text-base">{claimData.location || "Kreuzung Hauptstraße / Bahnhofstraße, 12345 Musterstadt"}</p>
             </div>
             <div className="md:col-span-2">
-              <span className="text-xs md:text-sm text-gray-600">Wetterbedingungen:</span>
-              <p className="font-medium text-sm md:text-base">Trocken, gute Sicht</p>
+              
+              
             </div>
           </div>
         </CardContent>
@@ -86,8 +79,7 @@ const ClaimPreview = ({ claimData }: ClaimPreviewProps) => {
           </CardTitle>
         </CardHeader>
         <CardContent className="pt-0">
-          {mockThirdParties.map((party, index) => (
-            <div key={index} className="border-l-4 border-blue-200 pl-3 md:pl-4 mb-4 last:mb-0">
+          {mockThirdParties.map((party, index) => <div key={index} className="border-l-4 border-blue-200 pl-3 md:pl-4 mb-4 last:mb-0">
               <div className="space-y-3 md:grid md:grid-cols-2 md:gap-4 md:space-y-0">
                 <div>
                   <span className="text-xs md:text-sm text-gray-600">Name:</span>
@@ -106,8 +98,7 @@ const ClaimPreview = ({ claimData }: ClaimPreviewProps) => {
                   <p className="font-medium text-sm md:text-base">{party.phone}</p>
                 </div>
               </div>
-            </div>
-          ))}
+            </div>)}
         </CardContent>
       </Card>
 
@@ -156,25 +147,17 @@ const ClaimPreview = ({ claimData }: ClaimPreviewProps) => {
             </div>
           </div>
 
-          {claimData.photos.length > 0 && (
-            <div>
+          {claimData.photos.length > 0 && <div>
               <h5 className="font-medium mb-3 text-sm md:text-base">Schadenfotos ({claimData.photos.length})</h5>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4">
-                {claimData.photos.map((photo, index) => (
-                  <div key={index} className="relative">
-                    <img 
-                      src={photo} 
-                      alt={`Schaden ${index + 1}`}
-                      className="w-full h-20 md:h-24 object-cover rounded-md border"
-                    />
+                {claimData.photos.map((photo, index) => <div key={index} className="relative">
+                    <img src={photo} alt={`Schaden ${index + 1}`} className="w-full h-20 md:h-24 object-cover rounded-md border" />
                     <div className="absolute top-1 right-1 bg-black bg-opacity-50 text-white text-xs px-1.5 py-0.5 md:px-2 md:py-1 rounded">
                       {index + 1}
                     </div>
-                  </div>
-                ))}
+                  </div>)}
               </div>
-            </div>
-          )}
+            </div>}
         </CardContent>
       </Card>
 
@@ -283,8 +266,6 @@ const ClaimPreview = ({ claimData }: ClaimPreviewProps) => {
           </div>
         </CardContent>
       </Card>
-    </div>
-  );
+    </div>;
 };
-
 export default ClaimPreview;
