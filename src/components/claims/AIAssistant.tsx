@@ -3,7 +3,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { CheckCircle, AlertTriangle, TrendingUp, Clock, Euro } from 'lucide-react';
-
 interface ClaimData {
   description: string;
   photos: string[];
@@ -14,19 +13,16 @@ interface ClaimData {
   recommendation: string;
   shouldReport: boolean;
 }
-
 interface AIAssistantProps {
   claimData: ClaimData;
   onAnalysisUpdate: (updates: Partial<ClaimData>) => void;
 }
-
 const AIAssistant = ({
   claimData,
   onAnalysisUpdate
 }: AIAssistantProps) => {
   const [analyzing, setAnalyzing] = useState(true);
   const [analysis, setAnalysis] = useState<any>(null);
-
   useEffect(() => {
     // Simulate AI analysis
     setTimeout(() => {
@@ -64,7 +60,6 @@ const AIAssistant = ({
       setAnalyzing(false);
     }, 3000);
   }, [claimData, onAnalysisUpdate]);
-
   if (analyzing) {
     return <div className="text-center py-12">
         <div className="animate-spin w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full mx-auto mb-6"></div>
@@ -77,10 +72,9 @@ const AIAssistant = ({
         </div>
       </div>;
   }
-
   return <div className="space-y-6">
       <div className="text-center">
-        <h3 className="text-xl font-semibold mb-2">KI-Analyse Ergebnis</h3>
+        <h3 className="text-xl font-semibold mb-2">Ergebnis</h3>
         <p className="text-gray-600">
           Basierend auf Ihrer Beschreibung und den Fotos haben wir eine umfassende Analyse erstellt.
         </p>
@@ -163,5 +157,4 @@ const AIAssistant = ({
       </Card>
     </div>;
 };
-
 export default AIAssistant;
