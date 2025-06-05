@@ -3,12 +3,23 @@ import Header from '@/components/Header';
 import HeroSection from '@/components/HeroSection';
 import FeaturesSection from '@/components/FeaturesSection';
 import CTASection from '@/components/CTASection';
+import ClaimReportButton from '@/components/ClaimReportButton';
 
 const Index = () => {
   return (
     <div className="min-h-screen bg-white">
       <Header />
       <HeroSection />
+      
+      {/* Claim Report Section */}
+      <section className="py-16 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-3xl mx-auto">
+            <ClaimReportButton />
+          </div>
+        </div>
+      </section>
+      
       <FeaturesSection />
       <CTASection />
       
