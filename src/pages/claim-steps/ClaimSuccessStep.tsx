@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { CheckCircle, FileText, Download, Home, Clock, MessageSquare, ArrowLeft } from 'lucide-react';
+import { CheckCircle, FileText, Download, ArrowLeft, Clock } from 'lucide-react';
 
 const ClaimSuccessStep = () => {
   const navigate = useNavigate();
@@ -65,23 +65,11 @@ const ClaimSuccessStep = () => {
               Schaden erfolgreich gemeldet!
             </h1>
             <p className="text-green-700 text-lg">
-              Ihre Schadensmeldung wurde erfolgreich übermittelt.
+              Ihre Schadensmeldung mit der Schadensnummer{' '}
+              <span className="font-bold text-green-800">{claimId}</span>{' '}
+              wurde erfolgreich übermittelt.
             </p>
           </div>
-
-          {/* Claim Details Card */}
-          <Card className="mb-6 border-green-200 shadow-lg">
-            <CardContent className="p-6">
-              <div className="text-center mb-6">
-                <h2 className="text-xl font-semibold text-gray-800 mb-2">
-                  Ihre Schadennummer
-                </h2>
-                <div className="bg-green-100 border-2 border-green-300 rounded-lg p-4">
-                  <span className="text-2xl font-bold text-green-800">{claimId}</span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
 
           {/* Status Card - Updated to show current status */}
           <Card className="mb-6 shadow-lg">
@@ -123,20 +111,18 @@ const ClaimSuccessStep = () => {
 
           {/* Document Download */}
           <Card className="bg-gray-50 shadow-lg">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-3">
-                  <FileText className="h-5 w-5 text-gray-600" />
-                  <div>
-                    <p className="font-medium text-gray-800">Schadensmeldung als PDF</p>
-                    <p className="text-sm text-gray-600">Vollständige Dokumentation zum Download</p>
-                  </div>
+            <CardContent className="p-6">
+              <div className="flex items-center space-x-3 mb-4">
+                <FileText className="h-6 w-6 text-gray-600" />
+                <div>
+                  <p className="font-medium text-gray-800">Schadensmeldung als PDF</p>
+                  <p className="text-sm text-gray-600">Vollständige Dokumentation zum Download</p>
                 </div>
-                <Button variant="outline" size="sm">
-                  <Download className="h-4 w-4 mr-2" />
-                  Herunterladen
-                </Button>
               </div>
+              <Button variant="outline" className="w-full">
+                <Download className="h-4 w-4 mr-2" />
+                Herunterladen
+              </Button>
             </CardContent>
           </Card>
         </div>
