@@ -144,7 +144,7 @@ const VoiceClaimReport = () => {
         addBotMessage('Vielen Dank für die Bestätigung! Ihre Schadensmeldung wurde erfolgreich übermittelt. Sie erhalten in Kürze eine Bestätigung und weitere Informationen zum Bearbeitungsstatus per E-Mail.');
         setTimeout(() => {
           navigate('/claim-report/analysis');
-        }, 3000);
+        }, 1500);
       } else {
         const response = getResponseForStep(currentStep);
         addBotMessage(response);
@@ -305,10 +305,12 @@ const VoiceClaimReport = () => {
   const handleConfirmAccident = () => {
     setShowConfirmButton(false);
     setCurrentStep('completed');
-    addBotMessage('Vielen Dank für die Bestätigung! Ihre Schadensmeldung wurde erfolgreich übermittelt. Sie erhalten in Kürze eine Bestätigung und weitere Informationen zum Bearbeitungsstatus per E-Mail.');
+    addBotMessage('Vielen Dank für die Bestätigung! Ihre Schadensmeldung wurde erfolgreich übermittelt.');
+    
+    // Navigate directly after a short delay without showing the green completion card
     setTimeout(() => {
       navigate('/claim-report/analysis');
-    }, 3000);
+    }, 1500);
   };
 
   const canRecord = currentStep !== 'upload_options' && currentStep !== 'photo_upload' && currentStep !== 'confirmation' && currentStep !== 'slideshow' && currentStep !== 'slideshow_confirm' && currentStep !== 'completed';
@@ -574,7 +576,7 @@ const VoiceClaimReport = () => {
                   {isRecording ? 'Stoppen' : 'Sprechen'}
                 </span>
               </div>
-              <span className="text-xs opacity-80">
+              <span className="text-xs opacity-80 mt-0.5">
                 Tippen Sie, um zu sprechen.
               </span>
             </Button>
@@ -608,31 +610,12 @@ const VoiceClaimReport = () => {
           </div>
         )}
 
-        {/* Confirmation Button */}
+        {/* Confirmation Button - Changed to blue color */}
         {showConfirmButton && (
           <div className="flex justify-center p-4">
-            <Button onClick={handleConfirmAccident} className="bg-green-600 hover:bg-green-700 text-white px-8 py-3 text-lg font-medium">
+            <Button onClick={handleConfirmAccident} className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 text-lg font-medium">
               Bestätigen
             </Button>
-          </div>
-        )}
-
-        {/* Completion State */}
-        {currentStep === 'completed' && (
-          <div className="p-4">
-            <Card className="p-6 bg-green-50 border-green-200">
-              <div className="text-center">
-                <div className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <svg className="h-8 w-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                </div>
-                <h3 className="text-lg font-semibold text-green-800 mb-2">Meldung übermittelt</h3>
-                <p className="text-sm text-green-700">
-                  Sie werden automatisch zur Analyse weitergeleitet...
-                </p>
-              </div>
-            </Card>
           </div>
         )}
 
