@@ -1,8 +1,10 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { CheckCircle, AlertTriangle, TrendingUp, Clock, Euro } from 'lucide-react';
+
 interface ClaimData {
   description: string;
   photos: string[];
@@ -13,16 +15,23 @@ interface ClaimData {
   recommendation: string;
   shouldReport: boolean;
 }
+
 interface AIAssistantProps {
   claimData: ClaimData;
   onAnalysisUpdate: (updates: Partial<ClaimData>) => void;
 }
+
 const AIAssistant = ({
   claimData,
   onAnalysisUpdate
 }: AIAssistantProps) => {
   const [analyzing, setAnalyzing] = useState(true);
   const [analysis, setAnalysis] = useState<any>(null);
+
+  const formatCurrency = (amount: number) => {
+    return amount.toLocaleString('de-DE');
+  };
+
   useEffect(() => {
     // Simulate AI analysis
     setTimeout(() => {
@@ -60,6 +69,7 @@ const AIAssistant = ({
       setAnalyzing(false);
     }, 3000);
   }, [claimData, onAnalysisUpdate]);
+
   if (analyzing) {
     return <div className="text-center py-12">
         <div className="animate-spin w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full mx-auto mb-6"></div>
@@ -72,6 +82,7 @@ const AIAssistant = ({
         </div>
       </div>;
   }
+
   return <div className="space-y-6">
       <div className="text-center">
         <h3 className="text-xl font-semibold mb-2">Ergebnis</h3>
@@ -102,7 +113,7 @@ const AIAssistant = ({
         </CardContent>
       </Card>
 
-      {/* Compact Cost Analysis - Mobile Optimized */}
+      {/* Updated Cost Analysis */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
@@ -114,21 +125,21 @@ const AIAssistant = ({
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-4 text-center">
             <div className="space-y-1">
               <p className="text-sm text-gray-600">Geschätzte Kosten</p>
-              <p className="text-2xl sm:text-xl font-bold text-blue-600">€{analysis.totalEstimatedCost}</p>
+              <p className="text-2xl sm:text-xl font-bold text-blue-600">€{formatCurrency(analysis.totalEstimatedCost)}</p>
+            </div>
+            <div className="space-y-1">
+              <p className="text-sm text-gray-600">Kostenübernahme durch Versicherung</p>
+              <p className="text-2xl sm:text-xl font-bold text-green-600">€{formatCurrency(analysis.totalEstimatedCost - analysis.deductible)}</p>
             </div>
             <div className="space-y-1">
               <p className="text-sm text-gray-600">Ihre Selbstbeteiligung</p>
-              <p className="text-2xl sm:text-xl font-bold text-orange-600">€{analysis.deductible}</p>
-            </div>
-            <div className="space-y-1">
-              <p className="text-sm text-gray-600">Ihre Ersparnis</p>
-              <p className="text-2xl sm:text-xl font-bold text-green-600">€{analysis.totalEstimatedCost - analysis.deductible}</p>
+              <p className="text-2xl sm:text-xl font-bold text-orange-600">€{formatCurrency(analysis.deductible)}</p>
             </div>
           </div>
         </CardContent>
       </Card>
 
-      {/* Coverage Details - moved below recommendation */}
+      {/* Coverage Details - updated to remove future risks */}
       <Card>
         <CardHeader>
           <CardTitle>Versicherungsschutz</CardTitle>
@@ -139,7 +150,7 @@ const AIAssistant = ({
             <span className="font-medium">Vollständig abgedeckt durch {analysis.coverageCheck.coverageType}</span>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
             <div>
               <span className="text-gray-600">Beitragserhöhung:</span>
               <p className="font-medium">{analysis.riskAssessment.premiumIncrease}</p>
@@ -148,13 +159,10 @@ const AIAssistant = ({
               <span className="text-gray-600">Schadenfreiheitsklasse:</span>
               <p className="font-medium">{analysis.riskAssessment.noClaimsBonus}</p>
             </div>
-            <div>
-              <span className="text-gray-600">Zukünftiges Risiko:</span>
-              <p className="font-medium">{analysis.riskAssessment.futureRisks}</p>
-            </div>
           </div>
         </CardContent>
       </Card>
     </div>;
 };
+
 export default AIAssistant;
