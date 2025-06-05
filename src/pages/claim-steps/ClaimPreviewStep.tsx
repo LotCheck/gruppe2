@@ -6,7 +6,6 @@ import { Button } from '@/components/ui/button';
 import { ArrowLeft, CheckCircle } from 'lucide-react';
 import ClaimPreview from '@/components/claims/ClaimPreview';
 import StepNavigation from '@/components/claims/StepNavigation';
-import Header from '@/components/Header';
 
 const ClaimPreviewStep = () => {
   const navigate = useNavigate();
@@ -45,8 +44,6 @@ const ClaimPreviewStep = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-      <Header />
-      
       <div className="container mx-auto px-4 py-4 md:py-6">
         <div className="mb-4 md:mb-6">
           <Button 

@@ -6,7 +6,6 @@ import { Button } from '@/components/ui/button';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 import PhotoAnalysis from '@/components/claims/PhotoAnalysis';
 import StepNavigation from '@/components/claims/StepNavigation';
-import Header from '@/components/Header';
 
 const ClaimPhotosStep = () => {
   const navigate = useNavigate();
@@ -19,8 +18,6 @@ const ClaimPhotosStep = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-      <Header />
-      
       <div className="container mx-auto px-2 md:px-4 py-4 md:py-6">
         <div className="mb-4 md:mb-6">
           <Button 

@@ -1,11 +1,9 @@
-
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import ClaimStatus from '@/components/claims/ClaimStatus';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ArrowLeft, Plus, Mic, Camera, FileText, CheckCircle, MessageCircle, Sparkles } from 'lucide-react';
-import Header from '@/components/Header';
 
 const ClaimReport = () => {
   const location = useLocation();
@@ -59,7 +57,6 @@ const ClaimReport = () => {
   if (claimId) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-        <Header />
         <div className="container mx-auto px-4 py-6">
           <div className="mb-6">
             <Button 
@@ -92,7 +89,6 @@ const ClaimReport = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-      <Header />
       <div className="container mx-auto px-4 py-6">
         <div className="mb-6">
           <Button 
