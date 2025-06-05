@@ -30,21 +30,6 @@ const ClaimPreview = ({
   };
 
   // Mock data - in a real app this would come from the form or API
-  const mockPolicyholderData = {
-    name: "Max Mustermann",
-    policyNumber: "VN-2024-001234",
-    address: "Musterstraße 123, 12345 Musterstadt",
-    phone: "+49 151 12345678",
-    email: "max.mustermann@email.de"
-  };
-  const mockVehicleData = {
-    licensePlate: "M-AB 1234",
-    make: "BMW",
-    model: "320d",
-    year: "2020",
-    vin: "WBA1234567890123",
-    color: "Schwarz Metallic"
-  };
   const mockThirdParties = [{
     name: "Lisa Schmidt",
     licensePlate: "B-CD 5678",
@@ -53,83 +38,11 @@ const ClaimPreview = ({
   }];
   return <div className="space-y-4 md:space-y-6">
       <div className="text-center px-4">
-        <h3 className="text-xl md:text-2xl font-bold mb-2">Schadensmeldung - Vollständige Zusammenfassung</h3>
+        <h3 className="text-xl md:text-2xl font-bold mb-2">Zusammenfassung</h3>
         <p className="text-sm md:text-base text-gray-600">
           Überprüfen Sie alle Angaben vor der finalen Übermittlung an Ihre Versicherung.
         </p>
       </div>
-
-      {/* Versicherungsnehmer */}
-      <Card>
-        <CardHeader className="pb-3 md:pb-6">
-          <CardTitle className="flex items-center space-x-2 text-lg md:text-xl">
-            <User className="h-4 w-4 md:h-5 md:w-5 text-blue-600" />
-            <span>Angaben zum Versicherungsnehmer</span>
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="pt-0">
-          <div className="space-y-3 md:grid md:grid-cols-2 md:gap-4 md:space-y-0">
-            <div>
-              <span className="text-xs md:text-sm text-gray-600">Name:</span>
-              <p className="font-medium text-sm md:text-base">{mockPolicyholderData.name}</p>
-            </div>
-            <div>
-              <span className="text-xs md:text-sm text-gray-600">Versicherungsnummer:</span>
-              <p className="font-medium text-sm md:text-base">{mockPolicyholderData.policyNumber}</p>
-            </div>
-            <div className="md:col-span-2">
-              <span className="text-xs md:text-sm text-gray-600">Adresse:</span>
-              <p className="font-medium text-sm md:text-base">{mockPolicyholderData.address}</p>
-            </div>
-            <div>
-              <span className="text-xs md:text-sm text-gray-600">Telefon:</span>
-              <p className="font-medium text-sm md:text-base">{mockPolicyholderData.phone}</p>
-            </div>
-            <div>
-              <span className="text-xs md:text-sm text-gray-600">E-Mail:</span>
-              <p className="font-medium text-sm md:text-base break-all">{mockPolicyholderData.email}</p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Fahrzeugdaten */}
-      <Card>
-        <CardHeader className="pb-3 md:pb-6">
-          <CardTitle className="flex items-center space-x-2 text-lg md:text-xl">
-            <Car className="h-4 w-4 md:h-5 md:w-5 text-blue-600" />
-            <span>Angaben zum Fahrzeug</span>
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="pt-0">
-          <div className="space-y-3 md:grid md:grid-cols-3 md:gap-4 md:space-y-0">
-            <div>
-              <span className="text-xs md:text-sm text-gray-600">Kennzeichen:</span>
-              <p className="font-medium text-sm md:text-base">{mockVehicleData.licensePlate}</p>
-            </div>
-            <div>
-              <span className="text-xs md:text-sm text-gray-600">Marke:</span>
-              <p className="font-medium text-sm md:text-base">{mockVehicleData.make}</p>
-            </div>
-            <div>
-              <span className="text-xs md:text-sm text-gray-600">Modell:</span>
-              <p className="font-medium text-sm md:text-base">{mockVehicleData.model}</p>
-            </div>
-            <div>
-              <span className="text-xs md:text-sm text-gray-600">Baujahr:</span>
-              <p className="font-medium text-sm md:text-base">{mockVehicleData.year}</p>
-            </div>
-            <div>
-              <span className="text-xs md:text-sm text-gray-600">Farbe:</span>
-              <p className="font-medium text-sm md:text-base">{mockVehicleData.color}</p>
-            </div>
-            <div>
-              <span className="text-xs md:text-sm text-gray-600">Fahrgestellnummer:</span>
-              <p className="font-medium text-xs break-all">{mockVehicleData.vin}</p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
 
       {/* Unfallzeitpunkt und Ort */}
       <Card>
@@ -149,10 +62,7 @@ const ClaimPreview = ({
               <span className="text-xs md:text-sm text-gray-600">Unfallort:</span>
               <p className="font-medium text-sm md:text-base">{claimData.location || "Kreuzung Hauptstraße / Bahnhofstraße, 12345 Musterstadt"}</p>
             </div>
-            <div className="md:col-span-2">
-              <span className="text-xs md:text-sm text-gray-600">Wetterbedingungen:</span>
-              <p className="font-medium text-sm md:text-base">Trocken, gute Sicht</p>
-            </div>
+            
           </div>
         </CardContent>
       </Card>
@@ -192,7 +102,10 @@ const ClaimPreview = ({
       {/* Unfallhergang */}
       <Card>
         <CardHeader className="pb-3 md:pb-6">
-          
+          <CardTitle className="flex items-center space-x-2 text-lg md:text-xl">
+            <MessageSquare className="h-4 w-4 md:h-5 md:w-5 text-blue-600" />
+            <span>Unfallhergang / Unfallbericht</span>
+          </CardTitle>
         </CardHeader>
         <CardContent className="pt-0">
           <div className="bg-gray-50 p-3 md:p-4 rounded-md">
@@ -234,12 +147,7 @@ const ClaimPreview = ({
           {claimData.photos.length > 0 && <div>
               <h5 className="font-medium mb-3 text-sm md:text-base">Schadenfotos ({claimData.photos.length})</h5>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4">
-                {claimData.photos.map((photo, index) => <div key={index} className="relative">
-                    <img src={photo} alt={`Schaden ${index + 1}`} className="w-full h-20 md:h-24 object-cover rounded-md border" />
-                    <div className="absolute top-1 right-1 bg-black bg-opacity-50 text-white text-xs px-1.5 py-0.5 md:px-2 md:py-1 rounded">
-                      {index + 1}
-                    </div>
-                  </div>)}
+                {claimData.photos.map((photo, index) => {})}
               </div>
             </div>}
         </CardContent>
