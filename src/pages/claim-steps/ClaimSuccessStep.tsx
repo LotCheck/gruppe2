@@ -1,12 +1,15 @@
+
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { CheckCircle, FileText, Download, Home, Clock, MessageSquare } from 'lucide-react';
+
 const ClaimSuccessStep = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [claimId, setClaimId] = useState<string>('');
+
   useEffect(() => {
     // Get claim ID from location state or localStorage
     const id = location.state?.claimId || localStorage.getItem('currentClaimId') || `CL-${Date.now()}`;
@@ -15,6 +18,7 @@ const ClaimSuccessStep = () => {
     // Store the claim ID for later use
     localStorage.setItem('currentClaimId', id);
   }, [location]);
+
   const handleViewStatus = () => {
     navigate('/claim-report', {
       state: {
@@ -22,6 +26,7 @@ const ClaimSuccessStep = () => {
       }
     });
   };
+
   const handleNewClaim = () => {
     // Clear current claim data
     localStorage.removeItem('currentClaimId');
@@ -35,7 +40,9 @@ const ClaimSuccessStep = () => {
     localStorage.removeItem('claimShouldReport');
     navigate('/claim-report');
   };
-  return <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-100">
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-100">
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-2xl mx-auto">
           {/* Success Header */}
@@ -61,49 +68,42 @@ const ClaimSuccessStep = () => {
                 <div className="bg-green-100 border-2 border-green-300 rounded-lg p-4">
                   <span className="text-2xl font-bold text-green-800">{claimId}</span>
                 </div>
-                
-              </div>
-
-              <div className="space-y-4">
-                
-
-                
-
-                
               </div>
             </CardContent>
           </Card>
 
-          {/* Next Steps Card */}
+          {/* Status Card - Updated to show current status */}
           <Card className="mb-6">
             <CardContent className="p-6">
-              <h3 className="text-lg font-semibold text-gray-800 mb-4">Was passiert als Nächstes?</h3>
+              <h3 className="text-lg font-semibold text-gray-800 mb-4">Aktueller Status Ihres Schadenantrag</h3>
               <div className="space-y-4">
                 <div className="flex items-start space-x-3">
-                  <div className="w-6 h-6 bg-green-600 text-white rounded-full flex items-center justify-center flex-shrink-0 text-sm font-bold">
-                    1
+                  <div className="w-6 h-6 bg-green-600 text-white rounded-full flex items-center justify-center flex-shrink-0">
+                    <CheckCircle className="h-4 w-4" />
                   </div>
                   <div>
-                    <p className="font-medium">E-Mail Bestätigung (sofort)</p>
-                    <p className="text-sm text-gray-600">Sie erhalten eine Bestätigung mit allen Details</p>
+                    <p className="font-medium text-green-800">E-Mail Bestätigung erhalten ✓</p>
+                    <p className="text-sm text-green-600">Bestätigung mit allen Details wurde gesendet</p>
                   </div>
                 </div>
                 <div className="flex items-start space-x-3">
-                  <div className="w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center flex-shrink-0 text-sm font-bold">
-                    2
+                  <div className="w-6 h-6 bg-orange-500 text-white rounded-full flex items-center justify-center flex-shrink-0">
+                    <Clock className="h-4 w-4" />
                   </div>
                   <div>
-                    <p className="font-medium">Sachbearbeiter Zuweisung (24h)</p>
-                    <p className="text-sm text-gray-600">Ein persönlicher Ansprechpartner wird Ihnen zugewiesen</p>
+                    <p className="font-medium text-orange-700">Sachbearbeiter Zuweisung (in Bearbeitung)</p>
+                    <p className="text-sm text-orange-600">Ein persönlicher Ansprechpartner wird Ihnen zugewiesen</p>
+                    <p className="text-xs text-orange-500 mt-1">Erwartet innerhalb von 24h</p>
                   </div>
                 </div>
                 <div className="flex items-start space-x-3">
-                  <div className="w-6 h-6 bg-orange-600 text-white rounded-full flex items-center justify-center flex-shrink-0 text-sm font-bold">
+                  <div className="w-6 h-6 bg-gray-400 text-white rounded-full flex items-center justify-center flex-shrink-0 text-sm font-bold">
                     3
                   </div>
                   <div>
-                    <p className="font-medium">Gutachtertermin (2-3 Tage)</p>
-                    <p className="text-sm text-gray-600">Bei Bedarf wird ein Gutachtertermin vereinbart</p>
+                    <p className="font-medium text-gray-500">Gutachtertermin (ausstehend)</p>
+                    <p className="text-sm text-gray-400">Bei Bedarf wird ein Gutachtertermin vereinbart</p>
+                    <p className="text-xs text-gray-400 mt-1">Erwartet in 2-3 Tagen nach Sachbearbeiter-Zuweisung</p>
                   </div>
                 </div>
               </div>
@@ -112,11 +112,30 @@ const ClaimSuccessStep = () => {
 
           {/* Action Buttons */}
           <div className="space-y-3">
+            <Button 
+              onClick={handleViewStatus}
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3"
+            >
+              <MessageSquare className="h-4 w-4 mr-2" />
+              Detaillierten Status anzeigen
+            </Button>
             
+            <Button 
+              onClick={handleNewClaim}
+              variant="outline"
+              className="w-full py-3"
+            >
+              Neuen Schaden melden
+            </Button>
             
-            
-            
-            
+            <Button 
+              onClick={() => navigate('/')}
+              variant="ghost"
+              className="w-full py-3"
+            >
+              <Home className="h-4 w-4 mr-2" />
+              Zur Startseite
+            </Button>
           </div>
 
           {/* Document Download */}
@@ -139,6 +158,8 @@ const ClaimSuccessStep = () => {
           </Card>
         </div>
       </div>
-    </div>;
+    </div>
+  );
 };
+
 export default ClaimSuccessStep;
