@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import ClaimStatus from '@/components/claims/ClaimStatus';
@@ -146,7 +145,7 @@ const ClaimReport = () => {
                 </div>
               </div>
               <Button 
-                onClick={() => navigate('/claim-report/conversational')}
+                onClick={() => navigate('/voice-claim')}
                 className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white py-3 text-lg"
                 size="lg"
               >
