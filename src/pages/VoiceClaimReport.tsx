@@ -2,8 +2,9 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Mic, MicOff, Bot, Upload, FileText, Camera, Image, X, Check, User, Play, Star, Menu, MoreVertical } from 'lucide-react';
+import { Mic, MicOff, Bot, Upload, FileText, Camera, Image, X, Check, User, Play, Star, Menu, MoreVertical, ZoomIn } from 'lucide-react';
 import AccidentSequenceSlideshow from '@/components/claims/AccidentSequenceSlideshow';
+
 interface Message {
   id: string;
   type: 'bot' | 'user';
@@ -15,13 +16,16 @@ interface Message {
   voiceDuration?: number;
   isVideo?: boolean;
 }
+
 interface UploadedPhoto {
   id: string;
   file?: File;
   url: string;
   name: string;
 }
+
 type ConversationStep = 'initial' | 'location_time' | 'other_parties' | 'upload_options' | 'photo_upload' | 'confirmation' | 'slideshow' | 'slideshow_confirm' | 'completed';
+
 const VoiceClaimReport = () => {
   const navigate = useNavigate();
   const [messages, setMessages] = useState<Message[]>([{
@@ -39,20 +43,21 @@ const VoiceClaimReport = () => {
   const [uploadedPhotos, setUploadedPhotos] = useState<UploadedPhoto[]>([]);
   const [uploadSuccess, setUploadSuccess] = useState(false);
   const [showConfirmButton, setShowConfirmButton] = useState(false);
+  const [enlargedImage, setEnlargedImage] = useState<string | null>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Mock images for upload simulation with ordered names - updated with new images
+  // Mock images for upload simulation with new uploaded images
   const mockDamagePhotos = [{
     id: 'mock-1',
-    url: '/lovable-uploads/0ca5fba2-a303-4a1d-8436-56a3bbbacb28.png',
-    name: '01_green_car.jpg'
+    url: '/lovable-uploads/e5bbd045-296f-438b-bffe-9e0433d45079.png',
+    name: '01_black_classic_car.jpg'
   }, {
     id: 'mock-2',
-    url: '/lovable-uploads/358f46be-5f38-448a-bbc8-2fc6de6af917.png',
-    name: '02_black_classic_car.jpg'
+    url: '/lovable-uploads/4d07d859-cf82-4945-be96-ffbf67421699.png',
+    name: '02_green_hybrid_car.jpg'
   }];
 
   // Accident sequence images in correct order
@@ -288,6 +293,14 @@ const VoiceClaimReport = () => {
     }, 3000);
   };
   const canRecord = currentStep !== 'upload_options' && currentStep !== 'photo_upload' && currentStep !== 'confirmation' && currentStep !== 'slideshow' && currentStep !== 'slideshow_confirm' && currentStep !== 'completed';
+  const handleImageClick = (imageUrl: string) => {
+    setEnlargedImage(imageUrl);
+  };
+
+  const closeEnlargedImage = () => {
+    setEnlargedImage(null);
+  };
+
   return <div className="h-full bg-gradient-to-br from-blue-50 to-indigo-100">
       <div className="h-full max-w-md mx-auto flex flex-col">
         
@@ -356,8 +369,11 @@ const VoiceClaimReport = () => {
                   {/* Uploaded Photos Display */}
                   {message.photos && message.photos.length > 0 && <div className="mt-3">
                       <div className="grid grid-cols-3 gap-2">
-                        {message.photos.map(photo => <div key={photo.id} className="relative">
-                            <img src={photo.url} alt={photo.name} className="w-full h-16 object-cover rounded-md border border-gray-200" />
+                        {message.photos.map(photo => <div key={photo.id} className="relative group cursor-pointer" onClick={() => handleImageClick(photo.url)}>
+                            <img src={photo.url} alt={photo.name} className="w-full h-16 object-cover rounded-md border border-gray-200 hover:opacity-90 transition-opacity" />
+                            <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-200 rounded-md flex items-center justify-center">
+                              <ZoomIn className="h-4 w-4 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                            </div>
                             <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white text-xs p-1 rounded-b-md truncate">
                               {photo.name}
                             </div>
@@ -469,9 +485,12 @@ const VoiceClaimReport = () => {
                         Hochgeladene Fotos ({uploadedPhotos.length})
                       </h4>
                       <div className="grid grid-cols-3 gap-2">
-                        {uploadedPhotos.map(photo => <div key={photo.id} className="relative group">
-                            <img src={photo.url} alt={photo.name} className="w-full h-20 object-cover rounded-md border border-gray-200" />
-                            <button onClick={() => removePhoto(photo.id)} className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                        {uploadedPhotos.map(photo => <div key={photo.id} className="relative group cursor-pointer" onClick={() => handleImageClick(photo.url)}>
+                            <img src={photo.url} alt={photo.name} className="w-full h-20 object-cover rounded-md border border-gray-200 hover:opacity-90 transition-opacity" />
+                            <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-200 rounded-md flex items-center justify-center">
+                              <ZoomIn className="h-4 w-4 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                            </div>
+                            <button onClick={(e) => { e.stopPropagation(); removePhoto(photo.id); }} className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-10">
                               <X className="h-3 w-3" />
                             </button>
                             {uploadSuccess && uploadedPhotos.indexOf(photo) === uploadedPhotos.length - 1 && <div className="absolute inset-0 bg-green-500 bg-opacity-20 rounded-md flex items-center justify-center">
@@ -570,5 +589,29 @@ const VoiceClaimReport = () => {
           </Button>
         </div>}
     </div>;
+
+    {/* Image Enlargement Modal */}
+    {enlargedImage && (
+      <div className="fixed inset-0 z-50 bg-black bg-opacity-90 flex items-center justify-center p-4" onClick={closeEnlargedImage}>
+        <div className="relative max-w-full max-h-full">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={closeEnlargedImage}
+            className="absolute top-2 right-2 z-10 bg-black bg-opacity-50 text-white hover:bg-opacity-70"
+          >
+            <X className="h-5 w-5" />
+          </Button>
+          <img
+            src={enlargedImage}
+            alt="Vergrößertes Foto"
+            className="max-w-full max-h-full object-contain rounded-md"
+            onClick={(e) => e.stopPropagation()}
+          />
+        </div>
+      </div>
+    )}
+  </div>;
 };
+
 export default VoiceClaimReport;
