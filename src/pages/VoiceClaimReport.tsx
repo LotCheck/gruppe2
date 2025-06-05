@@ -3,7 +3,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { ArrowLeft, Mic, MicOff, Bot, MessageCircle, Heart } from 'lucide-react';
+import { ArrowLeft, Mic, MicOff, Bot, Upload, FileText, Heart } from 'lucide-react';
 
 interface Message {
   id: string;
@@ -12,20 +12,23 @@ interface Message {
   timestamp: Date;
 }
 
+type ConversationStep = 'initial' | 'location_time' | 'other_parties' | 'upload_options' | 'completed';
+
 const VoiceClaimReport = () => {
   const navigate = useNavigate();
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
       type: 'bot',
-      content: 'Hallo! Ich bin hier, um Ihnen bei Ihrer Schadensmeldung zu helfen. Es tut mir leid zu hören, dass Sie einen Schaden hatten. Erzählen Sie mir einfach, was passiert ist - ich höre zu.',
+      content: 'Hallo! Es tut mir leid zu hören, dass Sie einen Unfall hatten. Um Ihnen schnell und bestmöglich helfen zu können, schildern Sie mir bitte kurz, was passiert ist.',
       timestamp: new Date()
     }
   ]);
   
   const [isRecording, setIsRecording] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [currentStep, setCurrentStep] = useState<string>('initial');
+  const [currentStep, setCurrentStep] = useState<ConversationStep>('initial');
+  const [showUploadOptions, setShowUploadOptions] = useState(false);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -47,81 +50,32 @@ const VoiceClaimReport = () => {
     setMessages(prev => [...prev, newMessage]);
   };
 
-  const getContextualResponse = (step: string, voiceInput: string) => {
-    const input = voiceInput.toLowerCase();
-    
+  const getResponseForStep = (step: ConversationStep): string => {
     switch (step) {
       case 'initial':
-        if (input.includes('unfall') || input.includes('zusammenstoß') || input.includes('kollidiert')) {
-          setCurrentStep('accident_details');
-          return "Das klingt wirklich belastend für Sie. Können Sie mir erzählen, wann und wo dieser Unfall passiert ist?";
-        } else if (input.includes('kratzer') || input.includes('delle') || input.includes('parkschaden')) {
-          setCurrentStep('damage_details'); 
-          return "Verstehe, ein Parkschaden ist immer ärgerlich. Wo ist das passiert und wie groß ist der Schaden ungefähr?";
-        } else if (input.includes('diebstahl') || input.includes('gestohlen') || input.includes('einbruch')) {
-          setCurrentStep('theft_details');
-          return "Oh nein, das ist wirklich schlimm! Wann haben Sie bemerkt, dass etwas gestohlen wurde?";
-        }
-        setCurrentStep('clarification');
-        return "Ich verstehe. Können Sie mir etwas genauer beschreiben, was für eine Art von Schaden aufgetreten ist?";
+        setCurrentStep('location_time');
+        return "Vielen Dank für Ihre Schilderung. Können Sie mir bitte sagen, wann und wo genau der Unfall passiert ist?";
         
-      case 'accident_details':
-        if (input.includes('heute') || input.includes('gestern') || input.includes('samstag')) {
-          setCurrentStep('location_details');
-          return "Danke für die Zeitangabe. An welchem Ort ist der Unfall passiert? War noch ein anderes Fahrzeug beteiligt?";
-        }
-        setCurrentStep('location_details');
-        return "Verstehe. Können Sie mir auch den genauen Ort nennen wo es passiert ist?";
+      case 'location_time':
+        setCurrentStep('other_parties');
+        return "Danke für die Information. Gab es außer Ihnen noch weitere beteiligte Personen, Fahrzeuge oder wurden andere Sachen beschädigt?";
         
-      case 'location_details':
-        if (input.includes('kreuzung') || input.includes('ampel') || input.includes('straße')) {
-          setCurrentStep('other_party');
-          return "Eine Kreuzung also. War noch jemand anderes an dem Unfall beteiligt? Falls ja, haben Sie Kontaktdaten ausgetauscht?";
-        }
-        setCurrentStep('other_party');
-        return "Okay, der Ort ist notiert. Waren noch andere Personen oder Fahrzeuge beteiligt?";
-        
-      case 'other_party':
-        if (input.includes('ja') || input.includes('bmw') || input.includes('anderer fahrer')) {
-          setCurrentStep('damage_assessment');
-          return "Gut dass Sie die Daten haben. Welche Schäden sind an Ihrem Fahrzeug entstanden? Ist es noch fahrbereit?";
-        } else if (input.includes('nein') || input.includes('allein') || input.includes('niemand')) {
-          setCurrentStep('damage_assessment');
-          return "Verstehe, Sie waren allein betroffen. Welche Schäden sind an Ihrem Fahrzeug entstanden?";
-        }
-        setCurrentStep('damage_assessment');
-        return "Okay. Können Sie mir die Schäden an Ihrem Fahrzeug beschreiben?";
-        
-      case 'damage_assessment':
-        if (input.includes('nicht fahrbereit') || input.includes('abschleppen') || input.includes('kaputt')) {
-          setCurrentStep('police_witnesses');
-          return "Das klingt nach erheblichen Schäden. War die Polizei vor Ort? Gab es Zeugen des Unfalls?";
-        } else if (input.includes('kratzer') || input.includes('kleine') || input.includes('oberflächlich')) {
-          setCurrentStep('completion');
-          return "Das klingt nach einem überschaubaren Schaden. Haben Sie Fotos gemacht? Dann können wir Ihre Schadensmeldung abschließen.";
-        }
-        setCurrentStep('police_witnesses');
-        return "Verstehe. War die Polizei vor Ort oder gab es Zeugen?";
-        
-      case 'police_witnesses':
-        setCurrentStep('completion');
-        return "Sehr gut, das sind wichtige Informationen für die Schadensregulierung. Haben Sie Fotos vom Schaden gemacht? Dann haben wir alle wichtigen Details zusammen.";
-        
-      case 'completion':
-        return "Perfekt! Ich habe alle wichtigen Informationen erhalten. Ihre Schadensmeldung wird nun bearbeitet. Sie erhalten in Kürze eine Bestätigung und weitere Informationen zum Ablauf.";
+      case 'other_parties':
+        setCurrentStep('upload_options');
+        setTimeout(() => setShowUploadOptions(true), 1000);
+        return "Das hilft uns schon sehr weiter. Um Ihre Schadensmeldung zügig bearbeiten zu können, nutzen Sie bitte die folgenden Optionen:";
         
       default:
-        return "Können Sie mir dazu noch etwas mehr erzählen?";
+        return "Vielen Dank für Ihre Angaben.";
     }
   };
 
-  const simulateVoiceProcessing = (mockInput: string) => {
+  const simulateVoiceProcessing = () => {
     setIsProcessing(true);
     
-    // Simulate processing delay
     setTimeout(() => {
       setIsProcessing(false);
-      const response = getContextualResponse(currentStep, mockInput);
+      const response = getResponseForStep(currentStep);
       addBotMessage(response);
     }, 1500);
   };
@@ -135,23 +89,10 @@ const VoiceClaimReport = () => {
       setIsRecording(true);
       mediaRecorder.start();
       
-      // Mock voice input simulation for demo
-      const mockInputs = [
-        "Ich hatte einen Unfall an der Kreuzung B15 Lindenstraße heute um halb fünf",
-        "Ein BMW ist mir beim Linksabbiegen in die Seite gefahren",
-        "Ja wir haben Daten ausgetauscht, Maximilian Berger heißt er", 
-        "Meine Beifahrertür ist eingedrückt und der Airbag ist raus, nicht mehr fahrbereit",
-        "Ja die Polizei war da und es gab auch Zeugen",
-        "Ja ich habe Fotos gemacht vom ganzen Schaden"
-      ];
-      
-      const stepIndex = ['initial', 'accident_details', 'location_details', 'other_party', 'damage_assessment', 'police_witnesses'].indexOf(currentStep);
-      const mockInput = mockInputs[stepIndex] || mockInputs[0];
-      
-      // Simulate recording duration
+      // Simulate recording duration (2-4 seconds)
       setTimeout(() => {
         stopRecording();
-        simulateVoiceProcessing(mockInput);
+        simulateVoiceProcessing();
       }, 2000 + Math.random() * 2000);
       
     } catch (error) {
@@ -166,6 +107,28 @@ const VoiceClaimReport = () => {
       setIsRecording(false);
     }
   };
+
+  const handlePhotoUpload = () => {
+    // Simulate photo upload
+    addBotMessage('Vielen Dank für die Fotos. Sie wurden erfolgreich hochgeladen.');
+  };
+
+  const handlePoliceReportUpload = () => {
+    // Simulate police report upload
+    addBotMessage('Der Polizeibericht wurde erfolgreich hochgeladen.');
+  };
+
+  const handleContinue = () => {
+    setCurrentStep('completed');
+    addBotMessage('Ihre Schadensmeldung wurde erfolgreich übermittelt. Sie erhalten in Kürze eine Bestätigung und weitere Informationen zum Bearbeitungsstatus per E-Mail.');
+    
+    // Navigate to analysis after a short delay
+    setTimeout(() => {
+      navigate('/claim-report/analysis');
+    }, 3000);
+  };
+
+  const canRecord = currentStep !== 'upload_options' && currentStep !== 'completed';
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
@@ -192,7 +155,7 @@ const VoiceClaimReport = () => {
             Schadensmeldung
           </h1>
           <p className="text-gray-600 text-sm">
-            Erzählen Sie mir einfach, was passiert ist. Ich höre aufmerksam zu.
+            Sprechen Sie einfach mit mir - ich höre aufmerksam zu und helfe Ihnen weiter.
           </p>
         </div>
 
@@ -200,7 +163,7 @@ const VoiceClaimReport = () => {
         <div className="mb-6 h-80 overflow-y-auto space-y-4">
           {messages.map((message) => (
             <div key={message.id} className="flex items-start space-x-3">
-              <div className="w-8 h-8 rounded-full bg-green-600 text-white flex items-center justify-center flex-shrink-0">
+              <div className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center flex-shrink-0">
                 <Bot className="h-4 w-4" />
               </div>
               <Card className="flex-1 p-3 bg-white border border-gray-200">
@@ -218,18 +181,57 @@ const VoiceClaimReport = () => {
           {/* Processing Indicator */}
           {isProcessing && (
             <div className="flex items-start space-x-3">
-              <div className="w-8 h-8 rounded-full bg-green-600 text-white flex items-center justify-center">
+              <div className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center">
                 <Bot className="h-4 w-4" />
               </div>
               <Card className="p-3 bg-white border border-gray-200">
                 <div className="flex items-center space-x-2">
                   <div className="flex space-x-1">
-                    <div className="w-2 h-2 bg-green-500 rounded-full animate-bounce"></div>
-                    <div className="w-2 h-2 bg-green-500 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                    <div className="w-2 h-2 bg-green-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                    <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce"></div>
+                    <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                    <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
                   </div>
-                  <span className="text-sm text-gray-600">Ich verarbeite Ihre Eingabe...</span>
+                  <span className="text-sm text-gray-600">Ich höre zu und verarbeite Ihre Eingabe...</span>
                 </div>
+              </Card>
+            </div>
+          )}
+
+          {/* Upload Options */}
+          {showUploadOptions && (
+            <div className="space-y-3">
+              <Card className="p-4 bg-white border border-gray-200">
+                <div className="space-y-3">
+                  <Button
+                    onClick={handlePhotoUpload}
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center space-x-2"
+                  >
+                    <Upload className="h-4 w-4" />
+                    <span>Unfallfotos hochladen</span>
+                  </Button>
+                  
+                  <Button
+                    onClick={handlePoliceReportUpload}
+                    variant="outline"
+                    className="w-full border-blue-300 text-blue-700 hover:bg-blue-50 flex items-center justify-center space-x-2"
+                  >
+                    <FileText className="h-4 w-4" />
+                    <span>Polizeibericht hochladen</span>
+                  </Button>
+                  
+                  <Button
+                    onClick={handleContinue}
+                    className="w-full bg-green-600 hover:bg-green-700 text-white"
+                  >
+                    Weiter
+                  </Button>
+                </div>
+              </Card>
+              
+              <Card className="p-3 bg-blue-50 border border-blue-200">
+                <p className="text-xs text-blue-700">
+                  Laden Sie bitte Fotos vom Unfallort und den Schäden hoch. Falls ein Polizeibericht vorliegt, fügen Sie diesen ebenfalls hinzu. Klicken Sie anschließend auf 'Weiter', um Ihre Meldung abzuschließen.
+                </p>
               </Card>
             </div>
           )}
@@ -238,72 +240,86 @@ const VoiceClaimReport = () => {
         </div>
 
         {/* Voice Input Interface */}
-        <Card className="p-6 bg-white border-0 shadow-lg">
-          <div className="text-center">
-            
-            {/* Microphone Button */}
-            <div className="relative mb-4">
-              <div className={`
-                w-20 h-20 mx-auto rounded-full flex items-center justify-center transition-all duration-300
-                ${isRecording 
-                  ? 'bg-red-500 shadow-lg animate-pulse' 
-                  : 'bg-blue-600 hover:bg-blue-700 active:scale-95'
-                }
-              `}>
-                <Button
-                  variant="ghost"
-                  size="lg"
-                  onClick={isRecording ? stopRecording : startRecording}
-                  disabled={isProcessing}
-                  className="w-full h-full text-white hover:text-white hover:bg-transparent"
-                >
-                  {isRecording ? <MicOff className="h-8 w-8" /> : <Mic className="h-8 w-8" />}
-                </Button>
-              </div>
+        {canRecord && (
+          <Card className="p-6 bg-white border-0 shadow-lg">
+            <div className="text-center">
               
-              {/* Recording Animation */}
-              {isRecording && (
-                <div className="absolute inset-0 w-20 h-20 mx-auto rounded-full border-4 border-red-300 animate-ping opacity-75"></div>
-              )}
-            </div>
-
-            {/* Status Text */}
-            <div className="mb-4">
-              {isRecording ? (
-                <div className="flex items-center justify-center space-x-2">
-                  <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
-                  <span className="text-sm text-red-600 font-medium">Ich höre zu...</span>
+              {/* Microphone Button */}
+              <div className="relative mb-4">
+                <div className={`
+                  w-20 h-20 mx-auto rounded-full flex items-center justify-center transition-all duration-300
+                  ${isRecording 
+                    ? 'bg-red-500 shadow-lg animate-pulse' 
+                    : 'bg-blue-600 hover:bg-blue-700 active:scale-95'
+                  }
+                `}>
+                  <Button
+                    variant="ghost"
+                    size="lg"
+                    onClick={isRecording ? stopRecording : startRecording}
+                    disabled={isProcessing}
+                    className="w-full h-full text-white hover:text-white hover:bg-transparent"
+                  >
+                    {isRecording ? <MicOff className="h-8 w-8" /> : <Mic className="h-8 w-8" />}
+                  </Button>
                 </div>
-              ) : isProcessing ? (
-                <span className="text-sm text-blue-600">Verarbeite Ihre Nachricht...</span>
-              ) : (
-                <span className="text-sm text-gray-600">Tippen Sie, um zu sprechen</span>
+                
+                {/* Recording Animation */}
+                {isRecording && (
+                  <div className="absolute inset-0 w-20 h-20 mx-auto rounded-full border-4 border-red-300 animate-ping opacity-75"></div>
+                )}
+              </div>
+
+              {/* Status Text */}
+              <div className="mb-4">
+                {isRecording ? (
+                  <div className="flex items-center justify-center space-x-2">
+                    <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+                    <span className="text-sm text-red-600 font-medium">Ich höre zu...</span>
+                  </div>
+                ) : isProcessing ? (
+                  <span className="text-sm text-blue-600">Verarbeite Ihre Nachricht...</span>
+                ) : (
+                  <span className="text-sm text-gray-600">Tippen Sie, um zu sprechen</span>
+                )}
+              </div>
+
+              {/* Voice Waves Animation */}
+              {isRecording && (
+                <div className="flex items-center justify-center space-x-1 mb-4">
+                  {[...Array(5)].map((_, i) => (
+                    <div
+                      key={i}
+                      className="w-1 bg-red-500 rounded-full animate-pulse"
+                      style={{
+                        height: `${12 + Math.sin(Date.now() * 0.01 + i) * 8}px`,
+                        animationDelay: `${i * 0.1}s`,
+                        animationDuration: '0.8s'
+                      }}
+                    ></div>
+                  ))}
+                </div>
               )}
             </div>
+          </Card>
+        )}
 
-            {/* Voice Waves Animation */}
-            {isRecording && (
-              <div className="flex items-center justify-center space-x-1 mb-4">
-                {[...Array(5)].map((_, i) => (
-                  <div
-                    key={i}
-                    className="w-1 bg-red-500 rounded-full animate-pulse"
-                    style={{
-                      height: `${12 + Math.sin(Date.now() * 0.01 + i) * 8}px`,
-                      animationDelay: `${i * 0.1}s`,
-                      animationDuration: '0.8s'
-                    }}
-                  ></div>
-                ))}
+        {/* Completion State */}
+        {currentStep === 'completed' && (
+          <Card className="p-6 bg-green-50 border-green-200">
+            <div className="text-center">
+              <div className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg className="h-8 w-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
               </div>
-            )}
-
-            {/* Progress Indicator */}
-            <div className="text-xs text-gray-500">
-              Schritt {Math.min(['initial', 'accident_details', 'location_details', 'other_party', 'damage_assessment', 'police_witnesses', 'completion'].indexOf(currentStep) + 1, 6)} von 6
+              <h3 className="text-lg font-semibold text-green-800 mb-2">Meldung übermittelt</h3>
+              <p className="text-sm text-green-700">
+                Sie werden automatisch zur Analyse weitergeleitet...
+              </p>
             </div>
-          </div>
-        </Card>
+          </Card>
+        )}
 
         {/* Trust Indicators */}
         <div className="mt-6 text-center">
@@ -313,8 +329,8 @@ const VoiceClaimReport = () => {
               <span>Sichere Übertragung</span>
             </div>
             <div className="flex items-center space-x-1">
-              <MessageCircle className="h-3 w-3" />
-              <span>Vertraulich</span>
+              <Bot className="h-3 w-3" />
+              <span>KI-unterstützt</span>
             </div>
           </div>
         </div>
