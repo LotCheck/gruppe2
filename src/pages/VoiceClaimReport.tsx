@@ -3,7 +3,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { ArrowLeft, Mic, MicOff, Bot, Upload, FileText, Heart } from 'lucide-react';
+import { ArrowLeft, Mic, MicOff, Bot, Upload, FileText, Heart, Camera, Image, X, Check } from 'lucide-react';
 
 interface Message {
   id: string;
@@ -12,7 +12,13 @@ interface Message {
   timestamp: Date;
 }
 
-type ConversationStep = 'initial' | 'location_time' | 'other_parties' | 'upload_options' | 'completed';
+interface UploadedPhoto {
+  id: string;
+  file: File;
+  url: string;
+}
+
+type ConversationStep = 'initial' | 'location_time' | 'other_parties' | 'upload_options' | 'photo_upload' | 'completed';
 
 const VoiceClaimReport = () => {
   const navigate = useNavigate();
@@ -29,7 +35,12 @@ const VoiceClaimReport = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [currentStep, setCurrentStep] = useState<ConversationStep>('initial');
   const [showUploadOptions, setShowUploadOptions] = useState(false);
+  const [showPhotoUpload, setShowPhotoUpload] = useState(false);
+  const [uploadedPhotos, setUploadedPhotos] = useState<UploadedPhoto[]>([]);
+  const [uploadSuccess, setUploadSuccess] = useState(false);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -109,8 +120,12 @@ const VoiceClaimReport = () => {
   };
 
   const handlePhotoUpload = () => {
-    // Simulate photo upload
-    addBotMessage('Vielen Dank für die Fotos. Sie wurden erfolgreich hochgeladen.');
+    setCurrentStep('photo_upload');
+    setShowUploadOptions(false);
+    setTimeout(() => {
+      addBotMessage('Bitte laden Sie nun noch Fotos vom Schaden hoch! So können wir Ihnen schneller helfen.');
+      setShowPhotoUpload(true);
+    }, 500);
   };
 
   const handlePoliceReportUpload = () => {
@@ -118,9 +133,51 @@ const VoiceClaimReport = () => {
     addBotMessage('Der Polizeibericht wurde erfolgreich hochgeladen.');
   };
 
-  const handleContinue = () => {
+  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>, isCamera: boolean = false) => {
+    const files = event.target.files;
+    if (!files || files.length === 0) return;
+
+    Array.from(files).forEach((file) => {
+      if (file.type.startsWith('image/')) {
+        const url = URL.createObjectURL(file);
+        const newPhoto: UploadedPhoto = {
+          id: Date.now().toString() + Math.random(),
+          file,
+          url
+        };
+        
+        setUploadedPhotos(prev => [...prev, newPhoto]);
+        
+        // Show success animation
+        setUploadSuccess(true);
+        setTimeout(() => setUploadSuccess(false), 2000);
+        
+        // Bot feedback after first photo
+        if (uploadedPhotos.length === 0) {
+          setTimeout(() => {
+            addBotMessage('Super, danke! Das hilft uns sehr. Sie können gerne weitere Fotos hinzufügen.');
+          }, 500);
+        }
+      }
+    });
+    
+    // Reset input
+    event.target.value = '';
+  };
+
+  const removePhoto = (photoId: string) => {
+    setUploadedPhotos(prev => {
+      const photoToRemove = prev.find(p => p.id === photoId);
+      if (photoToRemove) {
+        URL.revokeObjectURL(photoToRemove.url);
+      }
+      return prev.filter(p => p.id !== photoId);
+    });
+  };
+
+  const handleContinueFromPhotos = () => {
     setCurrentStep('completed');
-    addBotMessage('Ihre Schadensmeldung wurde erfolgreich übermittelt. Sie erhalten in Kürze eine Bestätigung und weitere Informationen zum Bearbeitungsstatus per E-Mail.');
+    addBotMessage('Vielen Dank für die Fotos! Ihre Schadensmeldung wurde erfolgreich übermittelt. Sie erhalten in Kürze eine Bestätigung und weitere Informationen zum Bearbeitungsstatus per E-Mail.');
     
     // Navigate to analysis after a short delay
     setTimeout(() => {
@@ -128,7 +185,7 @@ const VoiceClaimReport = () => {
     }, 3000);
   };
 
-  const canRecord = currentStep !== 'upload_options' && currentStep !== 'completed';
+  const canRecord = currentStep !== 'upload_options' && currentStep !== 'photo_upload' && currentStep !== 'completed';
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
@@ -218,21 +275,102 @@ const VoiceClaimReport = () => {
                     <FileText className="h-4 w-4" />
                     <span>Polizeibericht hochladen</span>
                   </Button>
-                  
-                  <Button
-                    onClick={handleContinue}
-                    className="w-full bg-green-600 hover:bg-green-700 text-white"
-                  >
-                    Weiter
-                  </Button>
                 </div>
               </Card>
               
               <Card className="p-3 bg-blue-50 border border-blue-200">
                 <p className="text-xs text-blue-700">
-                  Laden Sie bitte Fotos vom Unfallort und den Schäden hoch. Falls ein Polizeibericht vorliegt, fügen Sie diesen ebenfalls hinzu. Klicken Sie anschließend auf 'Weiter', um Ihre Meldung abzuschließen.
+                  Laden Sie bitte Fotos vom Unfallort und den Schäden hoch. Falls ein Polizeibericht vorliegt, fügen Sie diesen ebenfalls hinzu.
                 </p>
               </Card>
+            </div>
+          )}
+
+          {/* Photo Upload Interface */}
+          {showPhotoUpload && (
+            <div className="space-y-4">
+              <Card className="p-4 bg-white border border-gray-200">
+                <div className="space-y-4">
+                  {/* Upload Buttons */}
+                  <div className="grid grid-cols-2 gap-3">
+                    <Button
+                      onClick={() => cameraInputRef.current?.click()}
+                      className="bg-blue-600 hover:bg-blue-700 text-white flex flex-col items-center justify-center h-20 space-y-1"
+                    >
+                      <Camera className="h-6 w-6" />
+                      <span className="text-xs">Kamera</span>
+                    </Button>
+                    
+                    <Button
+                      onClick={() => fileInputRef.current?.click()}
+                      variant="outline"
+                      className="border-blue-300 text-blue-700 hover:bg-blue-50 flex flex-col items-center justify-center h-20 space-y-1"
+                    >
+                      <Image className="h-6 w-6" />
+                      <span className="text-xs">Galerie</span>
+                    </Button>
+                  </div>
+
+                  {/* Uploaded Photos */}
+                  {uploadedPhotos.length > 0 && (
+                    <div>
+                      <h4 className="text-sm font-medium text-gray-700 mb-2">
+                        Hochgeladene Fotos ({uploadedPhotos.length})
+                      </h4>
+                      <div className="grid grid-cols-3 gap-2">
+                        {uploadedPhotos.map((photo) => (
+                          <div key={photo.id} className="relative group">
+                            <img
+                              src={photo.url}
+                              alt="Schadensfoto"
+                              className="w-full h-20 object-cover rounded-md border border-gray-200"
+                            />
+                            <button
+                              onClick={() => removePhoto(photo.id)}
+                              className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                            >
+                              <X className="h-3 w-3" />
+                            </button>
+                            {uploadSuccess && (
+                              <div className="absolute inset-0 bg-green-500 bg-opacity-20 rounded-md flex items-center justify-center">
+                                <Check className="h-6 w-6 text-green-600" />
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Continue Button */}
+                  {uploadedPhotos.length > 0 && (
+                    <Button
+                      onClick={handleContinueFromPhotos}
+                      className="w-full bg-green-600 hover:bg-green-700 text-white"
+                    >
+                      Weiter
+                    </Button>
+                  )}
+                </div>
+              </Card>
+
+              {/* Hidden File Inputs */}
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                multiple
+                onChange={(e) => handleFileSelect(e, false)}
+                className="hidden"
+              />
+              <input
+                ref={cameraInputRef}
+                type="file"
+                accept="image/*"
+                capture="environment"
+                onChange={(e) => handleFileSelect(e, true)}
+                className="hidden"
+              />
             </div>
           )}
           
