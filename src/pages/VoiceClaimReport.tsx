@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { ArrowLeft, Mic, MicOff, Bot, Upload, FileText, Heart, Camera, Image, X, Check, User, Play } from 'lucide-react';
+import AccidentSequenceSlideshow from '@/components/claims/AccidentSequenceSlideshow';
 
 interface Message {
   id: string;
@@ -73,6 +74,20 @@ const VoiceClaimReport = () => {
       url: '/lovable-uploads/b77fca91-2708-4ab6-b475-b7f3322e6515.png',
       name: '04_unfallstelle.jpg'
     }
+  ];
+
+  // Accident sequence images in correct order
+  const accidentSequenceImages = [
+    '/lovable-uploads/4d8ee763-cf2f-45d0-9a34-a8eaa6b0163f.png',
+    '/lovable-uploads/bc1200d7-2f85-4909-918b-0718fd42a4e5.png',
+    '/lovable-uploads/2096a279-c90f-4f61-9ccf-90c875843604.png',
+    '/lovable-uploads/e73f4214-e52e-4867-9334-a77b7b788ddd.png',
+    '/lovable-uploads/6244cf06-9a58-4bbc-aaaa-f5d059f116f1.png',
+    '/lovable-uploads/cbc97717-2e69-4ec4-9962-452d1ae6c6cd.png',
+    '/lovable-uploads/f2dea51a-ca15-4236-bfde-e554e342cbbd.png',
+    '/lovable-uploads/2e592004-f68d-4323-b3f3-ca1b75d67e36.png',
+    '/lovable-uploads/ca101aa7-87b8-4d2c-ab04-927e230103da.png',
+    '/lovable-uploads/96147a7c-2171-4316-8bac-0f85dc89794a.png'
   ];
 
   const scrollToBottom = () => {
@@ -310,15 +325,15 @@ const VoiceClaimReport = () => {
   const startSlideshow = () => {
     const sortedPhotos = [...uploadedPhotos].sort((a, b) => a.name.localeCompare(b.name));
     
-    // Add video placeholder to chat history instead of slideshow
+    // Add slideshow to chat history instead of video placeholder
     addBotMessage('Basierend auf Ihren Angaben und den Fotos, ist der Unfall so abgelaufen:', undefined, undefined, true);
     
-    // Show confirmation question after video placeholder
+    // Show confirmation question after slideshow completes
     setTimeout(() => {
       addBotMessage('Bestätigen Sie bitte, dass der Unfall so abgelaufen ist, wie in der Sequenz gezeigt, damit wir Ihre Schadensmeldung weiterleiten können.');
       setCurrentStep('slideshow_confirm');
       setShowConfirmButton(true);
-    }, 1000);
+    }, accidentSequenceImages.length * 200 + 1000); // Wait for slideshow to complete + 1 second
   };
 
   const handleConfirmAccident = () => {
@@ -441,21 +456,19 @@ const VoiceClaimReport = () => {
                     </div>
                   )}
 
-                  {/* Video Placeholder Display */}
+                  {/* Accident Sequence Slideshow Display */}
                   {message.isVideo && (
                     <div className="mt-3">
                       <div className="flex items-center space-x-2 mb-2">
                         <Play className="h-4 w-4 text-blue-600" />
                         <span className="text-sm font-medium text-gray-700">Unfallsequenz</span>
                       </div>
-                      <div className="relative bg-gray-300 rounded-md aspect-video flex items-center justify-center">
-                        <div className="flex flex-col items-center space-y-2">
-                          <div className="w-12 h-12 bg-gray-500 rounded-full flex items-center justify-center">
-                            <Play className="h-6 w-6 text-white ml-1" />
-                          </div>
-                          <span className="text-xs text-gray-600">Video abspielen</span>
-                        </div>
-                      </div>
+                      <AccidentSequenceSlideshow 
+                        images={accidentSequenceImages}
+                        onComplete={() => {
+                          console.log('Slideshow completed');
+                        }}
+                      />
                     </div>
                   )}
 
