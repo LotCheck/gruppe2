@@ -102,6 +102,48 @@ const VoiceClaimReport = () => {
       }, 100);
     }
   }, [showConfirmButton]);
+
+  // Play sound for the very first bot message
+  useEffect(() => {
+    if (
+      messages.length === 1 &&
+      messages[0].type === 'bot' &&
+      messages[0].content.startsWith('Hallo! Es tut mir leid zu hören, dass Sie einen Unfall hatten')
+    ) {
+      setTimeout(() => {
+        const audio = new Audio('/sound/1.m4a');
+        audio.play();
+      }, 1500);
+    }
+    // Play sound for the second bot message
+    if (
+      messages.length > 1 &&
+      messages[messages.length - 1].type === 'bot' &&
+      messages[messages.length - 1].content.startsWith('Vielen Dank für Ihre Schilderung. Können Sie mir bitte sagen')
+    ) {
+      const audio = new Audio('/sound/2.m4a');
+      audio.play();
+    }
+    // Play sound for the third bot message
+    if (
+      messages.length > 1 &&
+      messages[messages.length - 1].type === 'bot' &&
+      messages[messages.length - 1].content.startsWith('Danke für die Information. Gab es außer Ihnen noch')
+    ) {
+      const audio = new Audio('/sound/3.m4a');
+      audio.play();
+    }
+    // Play sound for the fourth bot message
+    if (
+      messages.length > 1 &&
+      messages[messages.length - 1].type === 'bot' &&
+      messages[messages.length - 1].content.startsWith('Das hilft uns schon sehr weiter. Um Ihre Schadensmeldung')
+    ) {
+      const audio = new Audio('/sound/4.m4a');
+      audio.play();
+    }
+  }, [messages]);
+
   const addBotMessage = (content: string, slideshow?: UploadedPhoto[], photos?: UploadedPhoto[], isVideo?: boolean) => {
     const newMessage: Message = {
       id: Date.now().toString(),
@@ -128,7 +170,7 @@ const VoiceClaimReport = () => {
       isVoice,
       voiceDuration: duration
     };
-    setMessages(prev => [...prev, newMessage]);
+    setMessages(prev => [...prev, newMessage]); 
 
     // Force scroll after adding message
     setTimeout(() => {
