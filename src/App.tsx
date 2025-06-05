@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import ClaimReport from "./pages/ClaimReport";
+import ConversationalClaim from "./pages/ConversationalClaim";
 import ClaimVoiceStep from "./pages/claim-steps/ClaimVoiceStep";
 import ClaimPhotosStep from "./pages/claim-steps/ClaimPhotosStep";
 import ClaimAnalysisStep from "./pages/claim-steps/ClaimAnalysisStep";
@@ -23,6 +24,7 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/claim-report" element={<ClaimReport />} />
+          <Route path="/claim-report/conversational" element={<ConversationalClaim />} />
           <Route path="/claim-report/voice" element={<ClaimVoiceStep />} />
           <Route path="/claim-report/photos" element={<ClaimPhotosStep />} />
           <Route path="/claim-report/analysis" element={<ClaimAnalysisStep />} />
