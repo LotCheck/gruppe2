@@ -2,11 +2,11 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { ArrowLeft, Mic, MicOff, Bot, Upload, FileText, Heart, Camera, Image, X, Check } from 'lucide-react';
+import { ArrowLeft, Mic, MicOff, Bot, Upload, FileText, Heart, Camera, Image, X, Check, User } from 'lucide-react';
 
 interface Message {
   id: string;
-  type: 'bot';
+  type: 'bot' | 'user';
   content: string;
   timestamp: Date;
 }
@@ -76,6 +76,16 @@ const VoiceClaimReport = () => {
     setMessages(prev => [...prev, newMessage]);
   };
 
+  const addUserMessage = (content: string) => {
+    const newMessage: Message = {
+      id: Date.now().toString(),
+      type: 'user',
+      content,
+      timestamp: new Date()
+    };
+    setMessages(prev => [...prev, newMessage]);
+  };
+
   const getResponseForStep = (step: ConversationStep): string => {
     switch (step) {
       case 'initial':
@@ -96,8 +106,25 @@ const VoiceClaimReport = () => {
     }
   };
 
+  const getUserMessageForStep = (step: ConversationStep): string => {
+    switch (step) {
+      case 'initial':
+        return "🎤 Es gab einen Auffahrunfall auf der A1. Das andere Auto ist mir hinten reingefahren.";
+      case 'location_time':
+        return "🎤 Das war heute Morgen gegen 8:30 Uhr auf der A1 Richtung Hamburg, kurz vor der Ausfahrt Harburg.";
+      case 'other_parties':
+        return "🎤 Ja, es war noch ein anderes Fahrzeug beteiligt. Zum Glück wurde niemand verletzt.";
+      default:
+        return "🎤 Sprachnachricht";
+    }
+  };
+
   const simulateVoiceProcessing = () => {
     setIsProcessing(true);
+    
+    // Add user message first
+    const userMessage = getUserMessageForStep(currentStep);
+    addUserMessage(userMessage);
     
     setTimeout(() => {
       setIsProcessing(false);
@@ -258,11 +285,19 @@ const VoiceClaimReport = () => {
         {/* Chat Messages */}
         <div className="mb-6 h-80 overflow-y-auto space-y-4">
           {messages.map((message) => (
-            <div key={message.id} className="flex items-start space-x-3">
-              <div className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center flex-shrink-0">
-                <Bot className="h-4 w-4" />
+            <div key={message.id} className={`flex items-start space-x-3 ${message.type === 'user' ? 'flex-row-reverse space-x-reverse' : ''}`}>
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
+                message.type === 'bot' 
+                  ? 'bg-blue-600 text-white' 
+                  : 'bg-gray-600 text-white'
+              }`}>
+                {message.type === 'bot' ? <Bot className="h-4 w-4" /> : <User className="h-4 w-4" />}
               </div>
-              <Card className="flex-1 p-3 bg-white border border-gray-200">
+              <Card className={`flex-1 p-3 border border-gray-200 ${
+                message.type === 'bot' 
+                  ? 'bg-white' 
+                  : 'bg-blue-50 border-blue-200'
+              }`}>
                 <p className="text-sm text-gray-900">{message.content}</p>
                 <div className="text-xs text-gray-500 mt-2">
                   {message.timestamp.toLocaleTimeString('de-DE', { 
