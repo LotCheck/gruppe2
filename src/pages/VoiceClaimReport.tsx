@@ -11,6 +11,8 @@ interface Message {
   timestamp: Date;
   slideshow?: UploadedPhoto[];
   photos?: UploadedPhoto[];
+  isVoice?: boolean;
+  voiceDuration?: number;
 }
 
 interface UploadedPhoto {
@@ -91,12 +93,14 @@ const VoiceClaimReport = () => {
     setMessages(prev => [...prev, newMessage]);
   };
 
-  const addUserMessage = (content: string) => {
+  const addUserMessage = (content: string, isVoice: boolean = false, duration?: number) => {
     const newMessage: Message = {
       id: Date.now().toString(),
       type: 'user',
       content,
-      timestamp: new Date()
+      timestamp: new Date(),
+      isVoice,
+      voiceDuration: duration
     };
     setMessages(prev => [...prev, newMessage]);
   };
@@ -139,9 +143,10 @@ const VoiceClaimReport = () => {
   const simulateVoiceProcessing = () => {
     setIsProcessing(true);
     
-    // Add user message first
+    // Add user message first with voice duration
     const userMessage = getUserMessageForStep(currentStep);
-    addUserMessage(userMessage);
+    const mockDuration = 2 + Math.random() * 3; // Random duration between 2-5 seconds
+    addUserMessage(userMessage, true, Math.floor(mockDuration));
     
     setTimeout(() => {
       setIsProcessing(false);
@@ -186,6 +191,15 @@ const VoiceClaimReport = () => {
       mediaRecorderRef.current.stop();
       setIsRecording(false);
     }
+  };
+
+  const formatVoiceDuration = (seconds: number) => {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    if (minutes > 0) {
+      return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+    }
+    return `0:${remainingSeconds.toString().padStart(2, '0')}`;
   };
 
   const handlePhotoUpload = () => {
@@ -349,67 +363,104 @@ const VoiceClaimReport = () => {
               }`}>
                 {message.type === 'bot' ? <Bot className="h-4 w-4" /> : <User className="h-4 w-4" />}
               </div>
-              <Card className={`flex-1 p-3 border border-gray-200 ${
-                message.type === 'bot' 
-                  ? 'bg-white' 
-                  : 'bg-blue-50 border-blue-200'
-              }`}>
-                <p className="text-sm text-gray-900">{message.content}</p>
-                
-                {/* Uploaded Photos Display */}
-                {message.photos && message.photos.length > 0 && (
-                  <div className="mt-3">
-                    <div className="grid grid-cols-3 gap-2">
-                      {message.photos.map((photo) => (
-                        <div key={photo.id} className="relative">
-                          <img
-                            src={photo.url}
-                            alt={photo.name}
-                            className="w-full h-16 object-cover rounded-md border border-gray-200"
-                          />
-                          <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white text-xs p-1 rounded-b-md truncate">
-                            {photo.name}
-                          </div>
+              
+              {message.isVoice && message.type === 'user' ? (
+                // Voice message bubble for user
+                <Card className="flex-1 p-3 bg-blue-600 text-white border-0 max-w-xs">
+                  <div className="flex items-center space-x-3">
+                    <div className="flex items-center justify-center w-8 h-8 bg-blue-500 rounded-full">
+                      <Mic className="h-4 w-4" />
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex items-center space-x-2 mb-1">
+                        <div className="flex space-x-1">
+                          {[...Array(5)].map((_, i) => (
+                            <div
+                              key={i}
+                              className="w-1 bg-white rounded-full"
+                              style={{
+                                height: `${8 + Math.sin(i * 0.5) * 4}px`
+                              }}
+                            />
+                          ))}
                         </div>
-                      ))}
+                        <span className="text-xs font-medium">
+                          {message.voiceDuration ? formatVoiceDuration(message.voiceDuration) : '0:03'}
+                        </span>
+                      </div>
                     </div>
                   </div>
-                )}
-
-                {/* Slideshow Display */}
-                {message.slideshow && message.slideshow.length > 0 && (
-                  <div className="mt-3">
-                    <div className="flex items-center space-x-2 mb-2">
-                      <Play className="h-4 w-4 text-blue-600" />
-                      <span className="text-sm font-medium text-gray-700">Unfallsequenz</span>
-                    </div>
-                    <div className="grid grid-cols-2 gap-2">
-                      {message.slideshow.map((photo, index) => (
-                        <div key={photo.id} className="relative">
-                          <img
-                            src={photo.url}
-                            alt={`Unfallbild ${index + 1}`}
-                            className="w-full h-24 object-cover rounded-md border border-gray-200"
-                          />
-                          <div className="absolute bottom-1 right-1 bg-black bg-opacity-50 text-white text-xs px-1 py-0.5 rounded">
-                            {index + 1}
-                          </div>
-                          <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white text-xs p-1 rounded-b-md truncate">
-                            {photo.name}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
+                  <div className="text-xs mt-2 opacity-75">
+                    {message.timestamp.toLocaleTimeString('de-DE', { 
+                      hour: '2-digit', 
+                      minute: '2-digit' 
+                    })}
                   </div>
-                )}
+                </Card>
+              ) : (
+                // Regular message bubble
+                <Card className={`flex-1 p-3 border border-gray-200 ${
+                  message.type === 'bot' 
+                    ? 'bg-white' 
+                    : 'bg-blue-50 border-blue-200'
+                }`}>
+                  <p className="text-sm text-gray-900">{message.content}</p>
+                  
+                  {/* Uploaded Photos Display */}
+                  {message.photos && message.photos.length > 0 && (
+                    <div className="mt-3">
+                      <div className="grid grid-cols-3 gap-2">
+                        {message.photos.map((photo) => (
+                          <div key={photo.id} className="relative">
+                            <img
+                              src={photo.url}
+                              alt={photo.name}
+                              className="w-full h-16 object-cover rounded-md border border-gray-200"
+                            />
+                            <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white text-xs p-1 rounded-b-md truncate">
+                              {photo.name}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
 
-                <div className="text-xs text-gray-500 mt-2">
-                  {message.timestamp.toLocaleTimeString('de-DE', { 
-                    hour: '2-digit', 
-                    minute: '2-digit' 
-                  })}
-                </div>
-              </Card>
+                  {/* Slideshow Display */}
+                  {message.slideshow && message.slideshow.length > 0 && (
+                    <div className="mt-3">
+                      <div className="flex items-center space-x-2 mb-2">
+                        <Play className="h-4 w-4 text-blue-600" />
+                        <span className="text-sm font-medium text-gray-700">Unfallsequenz</span>
+                      </div>
+                      <div className="grid grid-cols-2 gap-2">
+                        {message.slideshow.map((photo, index) => (
+                          <div key={photo.id} className="relative">
+                            <img
+                              src={photo.url}
+                              alt={`Unfallbild ${index + 1}`}
+                              className="w-full h-24 object-cover rounded-md border border-gray-200"
+                            />
+                            <div className="absolute bottom-1 right-1 bg-black bg-opacity-50 text-white text-xs px-1 py-0.5 rounded">
+                              {index + 1}
+                            </div>
+                            <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white text-xs p-1 rounded-b-md truncate">
+                              {photo.name}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="text-xs text-gray-500 mt-2">
+                    {message.timestamp.toLocaleTimeString('de-DE', { 
+                      hour: '2-digit', 
+                      minute: '2-digit' 
+                    })}
+                  </div>
+                </Card>
+              )}
             </div>
           ))}
           
