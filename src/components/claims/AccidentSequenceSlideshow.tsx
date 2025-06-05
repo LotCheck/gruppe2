@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Play, RotateCcw } from 'lucide-react';
 
@@ -46,12 +47,29 @@ const AccidentSequenceSlideshow = ({ images, onComplete }: AccidentSequenceSlide
 
   if (!hasStarted) {
     return (
-      <div className="relative bg-gray-300 rounded-md aspect-video flex items-center justify-center cursor-pointer" onClick={handlePlay}>
-        <div className="flex flex-col items-center space-y-2">
-          <div className="w-12 h-12 bg-gray-500 rounded-full flex items-center justify-center">
-            <Play className="h-6 w-6 text-white ml-1" />
+      <div className="relative rounded-lg aspect-video overflow-hidden cursor-pointer group" onClick={handlePlay}>
+        {/* Preview Image */}
+        <img
+          src="/lovable-uploads/a4d0969f-8c78-4ff8-8362-98c23f83c354.png"
+          alt="Unfallsequenz Vorschau"
+          className="w-full h-full object-cover"
+        />
+        
+        {/* Overlay */}
+        <div className="absolute inset-0 bg-black bg-opacity-30 group-hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center">
+          {/* Modern Play Button */}
+          <div className="relative">
+            <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-all duration-300 bg-gradient-to-br from-blue-500 to-blue-700">
+              <Play className="h-7 w-7 text-white ml-1" fill="white" />
+            </div>
+            {/* Pulse animation ring */}
+            <div className="absolute inset-0 w-16 h-16 bg-blue-600 rounded-full animate-ping opacity-30"></div>
           </div>
-          <span className="text-xs text-gray-600">Unfallsequenz abspielen</span>
+        </div>
+        
+        {/* Video Label */}
+        <div className="absolute bottom-4 left-4 bg-black bg-opacity-60 text-white text-sm px-3 py-1 rounded-full backdrop-blur-sm">
+          Unfallsequenz abspielen
         </div>
       </div>
     );
