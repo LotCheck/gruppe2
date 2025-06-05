@@ -1,9 +1,9 @@
-
 import React, { useState, useRef, useEffect } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Mic, MicOff, Send, Camera, Upload, FileText, CheckCircle, Bot, User, ArrowRight, Play, Pause } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Mic, MicOff, Send, Camera, Upload, FileText, CheckCircle, Bot, User, ArrowRight, Play, Pause, MessageSquare } from 'lucide-react';
 
 interface Message {
   id: string;
@@ -21,6 +21,10 @@ interface ClaimData {
   damages: string[];
   photos: string[];
   completed: boolean;
+  estimatedCost?: number;
+  severity?: 'minor' | 'moderate' | 'severe';
+  recommendation?: string;
+  shouldReport?: boolean;
 }
 
 const ConversationalClaimFlow = () => {
@@ -172,7 +176,7 @@ const ConversationalClaimFlow = () => {
   const generateReport = () => {
     setCurrentPhase('report');
     simulateTyping(() => {
-      addMessage("Excellent! Ich erstelle jetzt Ihren vollständigen Schadensbericht. Alle Informationen sind strukturiert und bereit für die Übermittlung an Ihre Versicherung.", 'bot');
+      addMessage("Perfekt! Ich habe Ihren vollständigen Schadensbericht erstellt. Hier können Sie alle Details noch einmal überprüfen, bevor wir ihn an Ihre Versicherung senden.", 'bot');
     }, 2000);
   };
 
@@ -193,6 +197,21 @@ const ConversationalClaimFlow = () => {
     } else if (currentPhase === 'upload') {
       finishPhotoUpload();
     }
+  };
+
+  const getMockClaimData = () => {
+    return {
+      description: "Auffahrunfall in Lyon, Frankreich. Frontbumper beschädigt durch Kollision mit vorausfahrendem Fahrzeug.",
+      location: "Lyon, Frankreich",
+      dateTime: "Gestern, 18:30 Uhr",
+      involvedParties: ["Keine anderen Verletzten"],
+      damages: ["Frontbumper beschädigt", "Lackschäden", "Leichte Verformung"],
+      photos: claimData.photos,
+      estimatedCost: 1500,
+      severity: 'moderate' as const,
+      recommendation: "Professionelle Reparatur empfohlen. Schaden sollte der Versicherung gemeldet werden.",
+      shouldReport: true
+    };
   };
 
   return (
@@ -347,18 +366,144 @@ const ConversationalClaimFlow = () => {
             )}
 
             {currentPhase === 'report' && (
-              <div className="mb-4 p-4 bg-green-50 rounded-lg border border-green-200">
-                <div className="flex items-center space-x-3 mb-3">
-                  <FileText className="h-5 w-5 text-green-600" />
-                  <h4 className="font-medium text-green-800">Schadensbericht erstellt</h4>
+              <div className="mb-4 space-y-4">
+                {/* Detailed Claim Report Preview */}
+                <div className="p-4 bg-green-50 rounded-lg border border-green-200">
+                  <div className="flex items-center space-x-3 mb-4">
+                    <FileText className="h-5 w-5 text-green-600" />
+                    <h4 className="font-medium text-green-800">Vollständiger Schadensbericht</h4>
+                  </div>
+
+                  {/* Summary Card */}
+                  <Card className="mb-4 border-2 border-blue-200 bg-blue-50">
+                    <CardHeader className="pb-3">
+                      <CardTitle className="flex items-center space-x-2 text-lg">
+                        <CheckCircle className="h-5 w-5 text-blue-600" />
+                        <span>Zusammenfassung</span>
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="pt-0">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <h5 className="font-medium mb-2 text-sm">Schadendetails</h5>
+                          <div className="space-y-1 text-xs">
+                            <div className="flex items-center space-x-2">
+                              <Badge className="bg-yellow-100 text-yellow-800 text-xs">
+                                Mittlerer Schaden
+                              </Badge>
+                            </div>
+                            <div>
+                              <span className="text-gray-600">Geschätzte Kosten:</span>
+                              <span className="ml-2 font-medium text-blue-600">€1.500</span>
+                            </div>
+                            <div>
+                              <span className="text-gray-600">Anzahl Fotos:</span>
+                              <span className="ml-2 font-medium">{claimData.photos.length}</span>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <div>
+                          <h5 className="font-medium mb-2 text-sm">Empfehlung</h5>
+                          <div className="p-2 rounded-md bg-green-100">
+                            <p className="text-xs text-green-700">
+                              Professionelle Reparatur empfohlen. Schaden sollte der Versicherung gemeldet werden.
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  {/* Description Preview */}
+                  <Card className="mb-4">
+                    <CardHeader className="pb-2">
+                      <CardTitle className="flex items-center space-x-2 text-sm">
+                        <MessageSquare className="h-4 w-4" />
+                        <span>Schadensbeschreibung</span>
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="pt-0">
+                      <div className="bg-gray-50 p-3 rounded-md">
+                        <p className="text-xs text-gray-800">
+                          Auffahrunfall in Lyon, Frankreich. Frontbumper beschädigt durch Kollision mit vorausfahrendem Fahrzeug. Unfall ereignete sich gestern um 18:30 Uhr.
+                        </p>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  {/* Photos Preview */}
+                  {claimData.photos.length > 0 && (
+                    <Card className="mb-4">
+                      <CardHeader className="pb-2">
+                        <CardTitle className="flex items-center space-x-2 text-sm">
+                          <Camera className="h-4 w-4" />
+                          <span>Schadenfotos ({claimData.photos.length})</span>
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent className="pt-0">
+                        <div className="grid grid-cols-3 gap-2">
+                          {claimData.photos.map((photo, index) => (
+                            <div key={index} className="relative">
+                              <img 
+                                src={photo} 
+                                alt={`Schaden ${index + 1}`}
+                                className="w-full h-16 object-cover rounded-md border"
+                              />
+                              <div className="absolute top-1 right-1 bg-black bg-opacity-50 text-white text-xs px-1 rounded">
+                                {index + 1}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  )}
+
+                  {/* Generated Report Preview */}
+                  <Card className="mb-4">
+                    <CardHeader className="pb-2">
+                      <CardTitle className="flex items-center space-x-2 text-sm">
+                        <FileText className="h-4 w-4" />
+                        <span>Automatisch generierter Bericht</span>
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="pt-0">
+                      <div className="bg-gray-50 p-3 rounded-md space-y-3">
+                        <div>
+                          <h6 className="font-medium mb-1 text-xs">Schadenshergang:</h6>
+                          <p className="text-xs text-gray-700">
+                            Auffahrunfall in Lyon mit Frontschaden am eigenen Fahrzeug. Kollision mit vorausfahrendem Fahrzeug bei Verkehrsstau.
+                          </p>
+                        </div>
+                        
+                        <div>
+                          <h6 className="font-medium mb-1 text-xs">Technische Analyse:</h6>
+                          <ul className="text-xs text-gray-700 space-y-0.5">
+                            <li>• Lackschäden am Frontbumper</li>
+                            <li>• Leichte Verformung der Stoßstange</li>
+                            <li>• Keine strukturellen Schäden erkennbar</li>
+                          </ul>
+                        </div>
+                        
+                        <div>
+                          <h6 className="font-medium mb-1 text-xs">Empfohlene Maßnahmen:</h6>
+                          <ul className="text-xs text-gray-700 space-y-0.5">
+                            <li>• Professionelle Reparatur in Fachwerkstatt</li>
+                            <li>• Kostenschätzung: €1.500</li>
+                            <li>• Meldung an Versicherung empfohlen</li>
+                          </ul>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  {/* Submit Button */}
+                  <Button className="w-full bg-green-600 hover:bg-green-700 text-white">
+                    <CheckCircle className="h-4 w-4 mr-2" />
+                    Schaden an Versicherung melden
+                  </Button>
                 </div>
-                <p className="text-sm text-green-700 mb-3">
-                  Ihr vollständiger Schadensbericht ist bereit zur Übermittlung.
-                </p>
-                <Button className="w-full bg-green-600 hover:bg-green-700">
-                  <CheckCircle className="h-4 w-4 mr-2" />
-                  Schaden an Versicherung melden
-                </Button>
               </div>
             )}
 
