@@ -1,8 +1,9 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, ArrowRight, Mic, MicOff, Send, Play, Pause, Upload, CheckCircle } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Mic, MicOff, Send, Play, Pause, Upload, CheckCircle, Heart, User, FileText, Camera, X } from 'lucide-react';
 import Header from '@/components/Header';
 
 interface Message {
