@@ -1,4 +1,3 @@
-
 import { Shield, Menu, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
@@ -13,7 +12,7 @@ const Header = () => {
           {/* Logo */}
           <div className="flex items-center space-x-2">
             <Shield className="h-8 w-8 text-white" />
-            <span className="text-xl font-bold text-white">AutoSchild</span>
+            <span className="text-xl font-bold text-white">KFZ-Versicherung</span>
           </div>
 
           {/* Desktop Navigation */}

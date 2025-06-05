@@ -1,8 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { ArrowLeft, Mic, MicOff, Bot, Upload, FileText, Heart, Camera, Image, X, Check, User, Play } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Mic, MicOff, Send, Play, Pause, Upload, CheckCircle } from 'lucide-react';
+import Header from '@/components/Header';
 
 interface Message {
   id: string;
@@ -325,7 +326,9 @@ const VoiceClaimReport = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-      <div className="container mx-auto px-4 py-6 max-w-md">
+      <Header />
+      
+      <div className="container mx-auto px-2 md:px-4 py-4 md:py-6">
         
         {/* Header */}
         <div className="mb-6">
@@ -581,7 +584,7 @@ const VoiceClaimReport = () => {
                             </button>
                             {uploadSuccess && uploadedPhotos.indexOf(photo) === uploadedPhotos.length - 1 && (
                               <div className="absolute inset-0 bg-green-500 bg-opacity-20 rounded-md flex items-center justify-center">
-                                <Check className="h-6 w-6 text-green-600" />
+                                <CheckCircle className="h-6 w-6 text-green-600" />
                               </div>
                             )}
                           </div>
