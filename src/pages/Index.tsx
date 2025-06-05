@@ -2,7 +2,7 @@
 import Header from '@/components/Header';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { User, Calendar, FileText, Building, Phone, Edit3, XCircle, HelpCircle } from 'lucide-react';
+import { User, Calendar, FileText, Building, Edit3, XCircle, HelpCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const Index = () => {
@@ -52,7 +52,7 @@ const Index = () => {
                   <Building className="h-5 w-5" style={{ color: '#0563C1' }} />
                   <div>
                     <p className="text-sm text-gray-500">Versicherungsgesellschaft</p>
-                    <p className="font-medium" style={{ color: '#333333' }}>CHECK24 Versicherung AG</p>
+                    <p className="font-medium" style={{ color: '#333333' }}>Cosmos Direkt</p>
                   </div>
                 </div>
                 
@@ -61,14 +61,6 @@ const Index = () => {
                   <div>
                     <p className="text-sm text-gray-500">Vertragsnummer</p>
                     <p className="font-medium" style={{ color: '#333333' }}>KFZ-2024-001234</p>
-                  </div>
-                </div>
-                
-                <div className="flex items-center space-x-3">
-                  <Phone className="h-5 w-5" style={{ color: '#0563C1' }} />
-                  <div>
-                    <p className="text-sm text-gray-500">Kontakt</p>
-                    <p className="font-medium" style={{ color: '#333333' }}>089 - 123 456 789</p>
                   </div>
                 </div>
               </div>
