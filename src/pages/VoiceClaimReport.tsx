@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Mic, MicOff, Bot, Upload, FileText, Heart, Camera, Image, X, Check, User, Play } from 'lucide-react';
+import { Mic, MicOff, Bot, Upload, FileText, Camera, Image, X, Check, User, Play } from 'lucide-react';
 import AccidentSequenceSlideshow from '@/components/claims/AccidentSequenceSlideshow';
 
 interface Message {
@@ -355,18 +355,15 @@ const VoiceClaimReport = () => {
 
   return (
     <div className="h-full bg-gradient-to-br from-blue-50 to-indigo-100">
-      <div className="h-full px-4 py-6 max-w-md mx-auto flex flex-col">
+      <div className="h-full px-4 py-4 max-w-md mx-auto flex flex-col">
         
-        {/* Title */}
-        <div className="text-center mb-6">
-          <div className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-3">
-            <Heart className="h-6 w-6 text-white" />
-          </div>
-          <h1 className="text-xl font-bold text-gray-900 mb-2">
+        {/* Minimal Title */}
+        <div className="text-center mb-4">
+          <h1 className="text-lg font-bold text-gray-900 mb-1">
             Schadensmeldung
           </h1>
-          <p className="text-gray-600 text-sm">
-            Sprechen Sie einfach mit mir - ich höre aufmerksam zu und helfe Ihnen weiter.
+          <p className="text-gray-600 text-xs">
+            Sprechen Sie einfach mit mir
           </p>
         </div>
 
@@ -632,48 +629,42 @@ const VoiceClaimReport = () => {
           <div ref={messagesEndRef} />
         </div>
 
-        {/* Voice Input Interface */}
+        {/* Voice Input Interface - Compact CTA */}
         {canRecord && (
-          <Card className="p-4 bg-white border-0 shadow-lg">
+          <Card className="p-3 bg-white border-0 shadow-lg">
             <div className="text-center">
               
-              {/* Microphone Button */}
-              <div className="relative mb-3">
-                <div className={`
-                  w-16 h-16 mx-auto rounded-full flex items-center justify-center transition-all duration-300
-                  ${isRecording 
-                    ? 'bg-red-500 shadow-lg animate-pulse' 
-                    : 'bg-blue-600 hover:bg-blue-700 active:scale-95'
-                  }
-                `}>
-                  <Button
-                    variant="ghost"
-                    size="lg"
-                    onClick={isRecording ? stopRecording : startRecording}
-                    disabled={isProcessing}
-                    className="w-full h-full text-white hover:text-white hover:bg-transparent"
-                  >
-                    {isRecording ? <MicOff className="h-6 w-6" /> : <Mic className="h-6 w-6" />}
-                  </Button>
-                </div>
-                
-                {/* Recording Animation */}
-                {isRecording && (
-                  <div className="absolute inset-0 w-16 h-16 mx-auto rounded-full border-4 border-red-300 animate-ping opacity-75"></div>
-                )}
+              {/* Compact Microphone Button */}
+              <div className="relative mb-2">
+                <Button
+                  onClick={isRecording ? stopRecording : startRecording}
+                  disabled={isProcessing}
+                  className={`
+                    h-12 px-6 rounded-full transition-all duration-300 flex items-center justify-center space-x-2
+                    ${isRecording 
+                      ? 'bg-red-500 hover:bg-red-600 animate-pulse text-white' 
+                      : 'bg-blue-600 hover:bg-blue-700 text-white'
+                    }
+                  `}
+                >
+                  {isRecording ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
+                  <span className="text-sm font-medium">
+                    {isRecording ? 'Stoppen' : 'Sprechen'}
+                  </span>
+                </Button>
               </div>
 
               {/* Status Text */}
-              <div className="mb-3">
+              <div className="mb-2">
                 {isRecording ? (
                   <div className="flex items-center justify-center space-x-2">
                     <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
-                    <span className="text-sm text-red-600 font-medium">Ich höre zu...</span>
+                    <span className="text-xs text-red-600 font-medium">Ich höre zu...</span>
                   </div>
                 ) : isProcessing ? (
-                  <span className="text-sm text-blue-600">Verarbeite Ihre Nachricht...</span>
+                  <span className="text-xs text-blue-600">Verarbeite Ihre Nachricht...</span>
                 ) : (
-                  <span className="text-sm text-gray-600">Tippen Sie, um zu sprechen</span>
+                  <span className="text-xs text-gray-600">Tippen Sie, um zu sprechen</span>
                 )}
               </div>
 
@@ -715,7 +706,7 @@ const VoiceClaimReport = () => {
         )}
 
         {/* Trust Indicators */}
-        <div className="mt-6 text-center">
+        <div className="mt-4 text-center">
           <div className="flex items-center justify-center space-x-4 text-xs text-gray-500">
             <div className="flex items-center space-x-1">
               <div className="w-2 h-2 bg-green-500 rounded-full"></div>
