@@ -72,7 +72,7 @@ const Index = () => {
         <div className="space-y-4">
           {/* Primary CTA - Schaden melden */}
           <Button 
-            onClick={() => navigate('/claim-report')}
+            onClick={() => navigate('/voice-claim')}
             size="lg"
             className="w-full h-16 text-lg font-semibold text-white shadow-lg hover:opacity-90"
             style={{ backgroundColor: '#0563C1' }}

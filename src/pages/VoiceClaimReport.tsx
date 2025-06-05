@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { ArrowLeft, Mic, MicOff, Bot, Upload, FileText, Heart, Camera, Image, X, Check, User, Play } from 'lucide-react';
+import { Mic, MicOff, Bot, Upload, FileText, Heart, Camera, Image, X, Check, User, Play } from 'lucide-react';
 import AccidentSequenceSlideshow from '@/components/claims/AccidentSequenceSlideshow';
 
 interface Message {
@@ -354,27 +354,15 @@ const VoiceClaimReport = () => {
                    currentStep !== 'completed';
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-      <div className="container mx-auto px-4 py-6 max-w-md">
+    <div className="h-full bg-gradient-to-br from-blue-50 to-indigo-100">
+      <div className="h-full px-4 py-6 max-w-md mx-auto flex flex-col">
         
-        {/* Header */}
-        <div className="mb-6">
-          <Button 
-            variant="ghost" 
-            onClick={() => navigate('/')}
-            className="text-gray-600 hover:text-gray-900 p-2"
-          >
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Zurück
-          </Button>
-        </div>
-
         {/* Title */}
-        <div className="text-center mb-8">
-          <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
-            <Heart className="h-8 w-8 text-white" />
+        <div className="text-center mb-6">
+          <div className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-3">
+            <Heart className="h-6 w-6 text-white" />
           </div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">
+          <h1 className="text-xl font-bold text-gray-900 mb-2">
             Schadensmeldung
           </h1>
           <p className="text-gray-600 text-sm">
@@ -383,7 +371,7 @@ const VoiceClaimReport = () => {
         </div>
 
         {/* Chat Messages */}
-        <div className="mb-6 h-80 overflow-y-auto space-y-4">
+        <div className="flex-1 overflow-y-auto space-y-4 mb-4">
           {messages.map((message) => (
             <div key={message.id} className={`flex items-start space-x-3 ${message.type === 'user' ? 'flex-row-reverse space-x-reverse' : ''}`}>
               <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
@@ -646,13 +634,13 @@ const VoiceClaimReport = () => {
 
         {/* Voice Input Interface */}
         {canRecord && (
-          <Card className="p-6 bg-white border-0 shadow-lg">
+          <Card className="p-4 bg-white border-0 shadow-lg">
             <div className="text-center">
               
               {/* Microphone Button */}
-              <div className="relative mb-4">
+              <div className="relative mb-3">
                 <div className={`
-                  w-20 h-20 mx-auto rounded-full flex items-center justify-center transition-all duration-300
+                  w-16 h-16 mx-auto rounded-full flex items-center justify-center transition-all duration-300
                   ${isRecording 
                     ? 'bg-red-500 shadow-lg animate-pulse' 
                     : 'bg-blue-600 hover:bg-blue-700 active:scale-95'
@@ -665,18 +653,18 @@ const VoiceClaimReport = () => {
                     disabled={isProcessing}
                     className="w-full h-full text-white hover:text-white hover:bg-transparent"
                   >
-                    {isRecording ? <MicOff className="h-8 w-8" /> : <Mic className="h-8 w-8" />}
+                    {isRecording ? <MicOff className="h-6 w-6" /> : <Mic className="h-6 w-6" />}
                   </Button>
                 </div>
                 
                 {/* Recording Animation */}
                 {isRecording && (
-                  <div className="absolute inset-0 w-20 h-20 mx-auto rounded-full border-4 border-red-300 animate-ping opacity-75"></div>
+                  <div className="absolute inset-0 w-16 h-16 mx-auto rounded-full border-4 border-red-300 animate-ping opacity-75"></div>
                 )}
               </div>
 
               {/* Status Text */}
-              <div className="mb-4">
+              <div className="mb-3">
                 {isRecording ? (
                   <div className="flex items-center justify-center space-x-2">
                     <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
@@ -691,7 +679,7 @@ const VoiceClaimReport = () => {
 
               {/* Voice Waves Animation */}
               {isRecording && (
-                <div className="flex items-center justify-center space-x-1 mb-4">
+                <div className="flex items-center justify-center space-x-1">
                   {[...Array(5)].map((_, i) => (
                     <div
                       key={i}
@@ -743,7 +731,7 @@ const VoiceClaimReport = () => {
       
       {/* Confirmation Button */}
       {showConfirmButton && (
-        <div className="flex justify-center">
+        <div className="flex justify-center p-4">
           <Button
             onClick={handleConfirmAccident}
             className="bg-green-600 hover:bg-green-700 text-white px-8 py-3 text-lg font-medium"

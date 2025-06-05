@@ -5,8 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
-import ClaimReport from "./pages/ClaimReport";
-import VoiceClaimReport from "./pages/VoiceClaimReport";
+import VoiceClaimDrawer from "./components/VoiceClaimDrawer";
 import ClaimAnalysisStep from "./pages/claim-steps/ClaimAnalysisStep";
 import ClaimPreviewStep from "./pages/claim-steps/ClaimPreviewStep";
 import NotFound from "./pages/NotFound";
@@ -21,8 +20,7 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
-          <Route path="/claim-report" element={<ClaimReport />} />
-          <Route path="/voice-claim" element={<VoiceClaimReport />} />
+          <Route path="/voice-claim" element={<VoiceClaimDrawer />} />
           <Route path="/claim-report/analysis" element={<ClaimAnalysisStep />} />
           <Route path="/claim-report/preview" element={<ClaimPreviewStep />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
