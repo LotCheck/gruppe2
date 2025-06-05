@@ -2,84 +2,168 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, ArrowRight, Mic, MicOff, Send, Play, Pause, Upload, CheckCircle, Heart, User, FileText, Camera, X, Bot } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Mic, MicOff, Send, Play, Pause, Upload, CheckCircle } from 'lucide-react';
 import Header from '@/components/Header';
-
-interface ClaimData {
-  description: string;
-  location: string;
-  dateTime: string;
-  estimatedCost: number;
-  severity: 'minor' | 'moderate' | 'severe';
-  photos: string[];
-}
 
 interface Message {
   id: string;
-  type: 'user' | 'assistant';
+  type: 'bot' | 'user';
   content: string;
   timestamp: Date;
-  audioUrl?: string;
-  images?: string[];
+  slideshow?: UploadedPhoto[];
+  photos?: UploadedPhoto[];
+  isVoice?: boolean;
+  voiceDuration?: number;
 }
 
+interface UploadedPhoto {
+  id: string;
+  file?: File;
+  url: string;
+  name: string;
+}
+
+type ConversationStep = 'initial' | 'location_time' | 'other_parties' | 'upload_options' | 'photo_upload' | 'confirmation' | 'slideshow' | 'slideshow_confirm' | 'completed';
+
 const VoiceClaimReport = () => {
+  const navigate = useNavigate();
+  
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
-      type: 'assistant',
-      content: 'Hallo! Ich bin Ihr KI-Assistent für die Schadensmeldung. Erzählen Sie mir einfach, was passiert ist. Ich helfe Ihnen dabei, alle wichtigen Informationen zu erfassen.',
+      type: 'bot',
+      content: 'Hallo! Es tut mir leid zu hören, dass Sie einen Unfall hatten. Um Ihnen schnell und bestmöglich helfen zu können, schildern Sie mir bitte kurz, was passiert ist.',
       timestamp: new Date()
     }
   ]);
-  const [inputText, setInputText] = useState('');
+  
   const [isRecording, setIsRecording] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [uploadedImages, setUploadedImages] = useState<string[]>([]);
-  const [currentStep, setCurrentStep] = useState(0);
-  const [claimData, setClaimData] = useState({
-    description: '',
-    location: '',
-    dateTime: '',
-    estimatedCost: 0,
-    severity: 'minor' as 'minor' | 'moderate' | 'severe',
-    photos: [] as string[]
-  });
-
+  const [currentStep, setCurrentStep] = useState<ConversationStep>('initial');
+  const [showUploadOptions, setShowUploadOptions] = useState(false);
+  const [showPhotoUpload, setShowPhotoUpload] = useState(false);
+  const [showLoadingBubble, setShowLoadingBubble] = useState(false);
+  const [uploadedPhotos, setUploadedPhotos] = useState<UploadedPhoto[]>([]);
+  const [uploadSuccess, setUploadSuccess] = useState(false);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
-  const chunksRef = useRef<Blob[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const navigate = useNavigate();
 
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
+  // Mock images for upload simulation with ordered names
+  const mockDamagePhotos = [
+    {
+      id: 'mock-1',
+      url: '/lovable-uploads/94ac65a8-0be7-4610-9df3-92c92481b032.png',
+      name: '01_heckschaden.jpg'
+    },
+    {
+      id: 'mock-2', 
+      url: '/lovable-uploads/cafcdc7d-fe70-4a04-9b1b-cb7a56107b39.png',
+      name: '02_frontschaden.jpg'
+    },
+    {
+      id: 'mock-3',
+      url: '/lovable-uploads/d6f3f528-3e84-4b23-9037-728940a3addb.png', 
+      name: '03_seitenschaden.jpg'
+    },
+    {
+      id: 'mock-4',
+      url: '/lovable-uploads/b77fca91-2708-4ab6-b475-b7f3322e6515.png',
+      name: '04_unfallstelle.jpg'
+    }
+  ];
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  const generateClaimId = () => {
-    return `CL-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  const addBotMessage = (content: string, slideshow?: UploadedPhoto[], photos?: UploadedPhoto[]) => {
+    const newMessage: Message = {
+      id: Date.now().toString(),
+      type: 'bot',
+      content,
+      timestamp: new Date(),
+      slideshow,
+      photos
+    };
+    setMessages(prev => [...prev, newMessage]);
   };
 
-  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = event.target.files;
-    if (files) {
-      Array.from(files).forEach(file => {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          const imageUrl = e.target?.result as string;
-          setUploadedImages(prev => [...prev, imageUrl]);
-        };
-        reader.readAsDataURL(file);
-      });
+  const addUserMessage = (content: string, isVoice: boolean = false, duration?: number) => {
+    const newMessage: Message = {
+      id: Date.now().toString(),
+      type: 'user',
+      content,
+      timestamp: new Date(),
+      isVoice,
+      voiceDuration: duration
+    };
+    setMessages(prev => [...prev, newMessage]);
+  };
+
+  const getResponseForStep = (step: ConversationStep): string => {
+    switch (step) {
+      case 'initial':
+        setCurrentStep('location_time');
+        return "Vielen Dank für Ihre Schilderung. Können Sie mir bitte sagen, wann und wo genau der Unfall passiert ist?";
+        
+      case 'location_time':
+        setCurrentStep('other_parties');
+        return "Danke für die Information. Gab es außer Ihnen noch weitere beteiligte Personen, Fahrzeuge oder wurden andere Sachen beschädigt?";
+        
+      case 'other_parties':
+        setCurrentStep('upload_options');
+        setTimeout(() => setShowUploadOptions(true), 1000);
+        return "Das hilft uns schon sehr weiter. Um Ihre Schadensmeldung zügig bearbeiten zu können, nutzen Sie bitte die folgenden Optionen:";
+        
+      default:
+        return "Vielen Dank für Ihre Angaben.";
     }
   };
 
-  const removeImage = (index: number) => {
-    setUploadedImages(prev => prev.filter((_, i) => i !== index));
+  const getUserMessageForStep = (step: ConversationStep): string => {
+    switch (step) {
+      case 'initial':
+        return "🎤 Es gab einen Auffahrunfall auf der A1. Das andere Auto ist mir hinten reingefahren.";
+      case 'location_time':
+        return "🎤 Das war heute Morgen gegen 8:30 Uhr auf der A1 Richtung Hamburg, kurz vor der Ausfahrt Harburg.";
+      case 'other_parties':
+        return "🎤 Ja, es war noch ein anderes Fahrzeug beteiligt. Zum Glück wurde niemand verletzt.";
+      case 'slideshow_confirm':
+        return "🎤 Ja, genau so ist der Unfall passiert.";
+      default:
+        return "🎤 Sprachnachricht";
+    }
+  };
+
+  const simulateVoiceProcessing = () => {
+    setIsProcessing(true);
+    
+    // Add user message first with voice duration
+    const userMessage = getUserMessageForStep(currentStep);
+    const mockDuration = 2 + Math.random() * 3; // Random duration between 2-5 seconds
+    addUserMessage(userMessage, true, Math.floor(mockDuration));
+    
+    setTimeout(() => {
+      setIsProcessing(false);
+      
+      if (currentStep === 'slideshow_confirm') {
+        setCurrentStep('completed');
+        addBotMessage('Vielen Dank für die Bestätigung! Ihre Schadensmeldung wurde erfolgreich übermittelt. Sie erhalten in Kürze eine Bestätigung und weitere Informationen zum Bearbeitungsstatus per E-Mail.');
+        
+        setTimeout(() => {
+          navigate('/claim-report/analysis');
+        }, 3000);
+      } else {
+        const response = getResponseForStep(currentStep);
+        addBotMessage(response);
+      }
+    }, 1500);
   };
 
   const startRecording = async () => {
@@ -87,287 +171,558 @@ const VoiceClaimReport = () => {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       const mediaRecorder = new MediaRecorder(stream);
       mediaRecorderRef.current = mediaRecorder;
-      chunksRef.current = [];
-
-      mediaRecorder.ondataavailable = (event) => {
-        if (event.data.size > 0) {
-          chunksRef.current.push(event.data);
-        }
-      };
-
-      mediaRecorder.onstop = () => {
-        const audioBlob = new Blob(chunksRef.current, { type: 'audio/wav' });
-        const audioUrl = URL.createObjectURL(audioBlob);
-        
-        // Simulate speech-to-text conversion
-        setTimeout(() => {
-          const transcribedText = "Heute um 14:30 Uhr bin ich auf der Hauptstraße in einen kleinen Unfall verwickelt worden. Ein anderes Auto ist mir hinten reingefahren, als ich an der Ampel gehalten habe.";
-          handleSendMessage(transcribedText, audioUrl);
-          setIsProcessing(false);
-        }, 2000);
-      };
-
-      mediaRecorder.start();
+      
       setIsRecording(true);
+      mediaRecorder.start();
+      
+      // Simulate recording duration (2-4 seconds)
+      setTimeout(() => {
+        stopRecording();
+        simulateVoiceProcessing();
+      }, 2000 + Math.random() * 2000);
+      
     } catch (error) {
-      console.error('Error starting recording:', error);
+      console.error('Fehler beim Zugriff auf das Mikrofon:', error);
+      addBotMessage('Entschuldigung, ich konnte nicht auf Ihr Mikrofon zugreifen. Bitte überprüfen Sie Ihre Berechtigungen.');
     }
   };
 
   const stopRecording = () => {
-    if (mediaRecorderRef.current && isRecording) {
+    if (mediaRecorderRef.current) {
       mediaRecorderRef.current.stop();
-      mediaRecorderRef.current.stream.getTracks().forEach(track => track.stop());
       setIsRecording(false);
-      setIsProcessing(true);
     }
   };
 
-  const handleSendMessage = (text: string, audioUrl?: string) => {
-    if (!text.trim()) return;
+  const formatVoiceDuration = (seconds: number) => {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    if (minutes > 0) {
+      return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+    }
+    return `0:${remainingSeconds.toString().padStart(2, '0')}`;
+  };
 
-    const userMessage: Message = {
-      id: Date.now().toString(),
-      type: 'user',
-      content: text,
-      timestamp: new Date(),
-      audioUrl,
-      images: uploadedImages.length > 0 ? [...uploadedImages] : undefined
-    };
-
-    setMessages(prev => [...prev, userMessage]);
-    setInputText('');
-    setUploadedImages([]);
-
-    // Simulate AI response
+  const handlePhotoUpload = () => {
+    setCurrentStep('photo_upload');
+    setShowUploadOptions(false);
+    
+    // Mock upload of the attached images
     setTimeout(() => {
-      const responses = [
-        "Ich verstehe. Das tut mir leid zu hören. Können Sie mir mehr Details zum Unfallhergang erzählen? Wo genau ist der Unfall passiert?",
-        "Vielen Dank für die Informationen. Gab es Verletzte bei dem Unfall? Und haben Sie Fotos von den Fahrzeugschäden gemacht?",
-        "Das hilft mir sehr weiter. Basierend auf Ihrer Beschreibung schätze ich die Reparaturkosten auf etwa 2.500-3.000 Euro. Möchten Sie die Schadensmeldung jetzt abschließen?"
-      ];
+      addBotMessage('Bitte laden Sie nun noch Fotos vom Schaden hoch! So können wir Ihnen schneller helfen.');
+      setShowPhotoUpload(true);
+      
+      // Simulate automatic upload of mock images
+      setTimeout(() => {
+        mockDamagePhotos.forEach((photo, index) => {
+          setTimeout(() => {
+            setUploadedPhotos(prev => [...prev, photo]);
+            
+            // Show success animation
+            setUploadSuccess(true);
+            setTimeout(() => setUploadSuccess(false), 1500);
+            
+            // Bot feedback after first photo
+            if (index === 0) {
+              setTimeout(() => {
+                addBotMessage('Super, danke! Das hilft uns sehr. Sie können gerne weitere Fotos hinzufügen.');
+              }, 800);
+            }
+          }, index * 1000);
+        });
+      }, 1000);
+      
+    }, 500);
+  };
 
-      const assistantMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        type: 'assistant',
-        content: responses[currentStep] || "Vielen Dank für alle Informationen. Ihre Schadensmeldung wurde erfolgreich erfasst.",
-        timestamp: new Date()
-      };
+  const handlePoliceReportUpload = () => {
+    // Simulate police report upload
+    addBotMessage('Der Polizeibericht wurde erfolgreich hochgeladen.');
+  };
 
-      setMessages(prev => [...prev, assistantMessage]);
-      setCurrentStep(prev => prev + 1);
+  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>, isCamera: boolean = false) => {
+    const files = event.target.files;
+    if (!files || files.length === 0) return;
+
+    Array.from(files).forEach((file) => {
+      if (file.type.startsWith('image/')) {
+        const url = URL.createObjectURL(file);
+        const newPhoto: UploadedPhoto = {
+          id: Date.now().toString() + Math.random(),
+          file,
+          url,
+          name: file.name
+        };
+        
+        setUploadedPhotos(prev => [...prev, newPhoto]);
+        
+        // Show success animation
+        setUploadSuccess(true);
+        setTimeout(() => setUploadSuccess(false), 2000);
+        
+        // Bot feedback after first photo
+        if (uploadedPhotos.length === 0) {
+          setTimeout(() => {
+            addBotMessage('Super, danke! Das hilft uns sehr. Sie können gerne weitere Fotos hinzufügen.');
+          }, 500);
+        }
+      }
+    });
+    
+    // Reset input
+    event.target.value = '';
+  };
+
+  const removePhoto = (photoId: string) => {
+    setUploadedPhotos(prev => {
+      const photoToRemove = prev.find(p => p.id === photoId);
+      if (photoToRemove && photoToRemove.file) {
+        URL.revokeObjectURL(photoToRemove.url);
+      }
+      return prev.filter(p => p.id !== photoId);
+    });
+  };
+
+  const handleContinueFromPhotos = () => {
+    setCurrentStep('confirmation');
+    setShowPhotoUpload(false);
+    
+    // Add uploaded photos to chat history
+    const sortedPhotos = [...uploadedPhotos].sort((a, b) => a.name.localeCompare(b.name));
+    addBotMessage('Hier sind die hochgeladenen Fotos:', undefined, sortedPhotos);
+    
+    addBotMessage('Perfekt! Ich habe nun alle relevanten Informationen erhalten. Lassen Sie mich kurz die Unfallsequenz basierend auf Ihren Angaben und Fotos analysieren...');
+    
+    // Show loading bubble after short delay
+    setTimeout(() => {
+      setShowLoadingBubble(true);
+    }, 1000);
+    
+    // Start slideshow after loading
+    setTimeout(() => {
+      setShowLoadingBubble(false);
+      startSlideshow();
+    }, 2500);
+  };
+
+  const startSlideshow = () => {
+    const sortedPhotos = [...uploadedPhotos].sort((a, b) => a.name.localeCompare(b.name));
+    
+    // Add slideshow to chat history
+    addBotMessage('Basierend auf Ihren Angaben und den Fotos, ist der Unfall so abgelaufen:', sortedPhotos);
+    
+    // Show confirmation question after slideshow
+    setTimeout(() => {
+      addBotMessage('Bestätigen Sie bitte, dass der Unfall so abgelaufen ist, wie in der Sequenz gezeigt, damit wir Ihre Schadensmeldung weiterleiten können.');
+      setCurrentStep('slideshow_confirm');
     }, 1000);
   };
 
-  const handleSubmit = () => {
-    const claimId = generateClaimId();
-    localStorage.setItem('currentClaimId', claimId);
-    localStorage.setItem('claimData', JSON.stringify({
-      ...claimData,
-      messages,
-      photos: uploadedImages
-    }));
-    
-    // Show success message
-    const successMessage: Message = {
-      id: Date.now().toString(),
-      type: 'assistant',
-      content: `Perfekt! Ihre Schadensmeldung wurde erfolgreich eingereicht. Ihre Referenznummer ist: ${claimId}. Sie erhalten in Kürze eine Bestätigung per E-Mail.`,
-      timestamp: new Date()
-    };
-
-    setMessages(prev => [...prev, successMessage]);
-    
-    // Navigate to success page after a short delay
-    setTimeout(() => {
-      navigate('/claim-report', { state: { claimId, success: true } });
-    }, 3000);
-  };
+  const canRecord = currentStep !== 'upload_options' && 
+                   currentStep !== 'photo_upload' && 
+                   currentStep !== 'confirmation' && 
+                   currentStep !== 'slideshow' && 
+                   currentStep !== 'completed';
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
       <Header />
       
-      <div className="container mx-auto px-4 py-6 max-w-4xl">
+      <div className="container mx-auto px-2 md:px-4 py-4 md:py-6">
+        
+        {/* Header */}
         <div className="mb-6">
           <Button 
             variant="ghost" 
-            onClick={() => navigate('/claim-report')}
-            className="text-gray-600 hover:text-gray-900"
+            onClick={() => navigate('/')}
+            className="text-gray-600 hover:text-gray-900 p-2"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
-            Zurück zur Übersicht
+            Zurück
           </Button>
         </div>
 
-        <Card className="shadow-lg border-0 h-[600px] flex flex-col">
-          <CardContent className="p-6 flex flex-col h-full">
-            <div className="flex items-center justify-between mb-4 pb-4 border-b">
-              <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                  <Bot className="h-6 w-6 text-blue-600" />
-                </div>
-                <div>
-                  <h2 className="text-xl font-semibold text-gray-900">KI-Assistent</h2>
-                  <p className="text-sm text-gray-500">Schadensmeldung</p>
-                </div>
-              </div>
-              <div className="flex items-center space-x-2">
-                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                <span className="text-sm text-gray-600">Online</span>
-              </div>
-            </div>
+        {/* Title */}
+        <div className="text-center mb-8">
+          <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+            <Heart className="h-8 w-8 text-white" />
+          </div>
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">
+            Schadensmeldung
+          </h1>
+          <p className="text-gray-600 text-sm">
+            Sprechen Sie einfach mit mir - ich höre aufmerksam zu und helfe Ihnen weiter.
+          </p>
+        </div>
 
-            {/* Messages */}
-            <div className="flex-1 overflow-y-auto space-y-4 mb-4 pr-2">
-              {messages.map((message) => (
-                <div key={message.id} className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}>
-                  <div className={`max-w-xs lg:max-w-md px-4 py-3 rounded-lg ${
-                    message.type === 'user' 
-                      ? 'bg-blue-600 text-white' 
-                      : 'bg-gray-100 text-gray-900'
-                  }`}>
-                    <p className="text-sm">{message.content}</p>
-                    
-                    {/* Audio playback for voice messages */}
-                    {message.audioUrl && (
-                      <div className="mt-2 flex items-center space-x-2">
-                        <audio controls className="w-full h-8">
-                          <source src={message.audioUrl} type="audio/wav" />
-                        </audio>
+        {/* Chat Messages */}
+        <div className="mb-6 h-80 overflow-y-auto space-y-4">
+          {messages.map((message) => (
+            <div key={message.id} className={`flex items-start space-x-3 ${message.type === 'user' ? 'flex-row-reverse space-x-reverse' : ''}`}>
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
+                message.type === 'bot' 
+                  ? 'bg-blue-600 text-white' 
+                  : 'bg-gray-600 text-white'
+              }`}>
+                {message.type === 'bot' ? <Bot className="h-4 w-4" /> : <User className="h-4 w-4" />}
+              </div>
+              
+              {message.isVoice && message.type === 'user' ? (
+                // Voice message bubble for user
+                <Card className="flex-1 p-3 bg-blue-600 text-white border-0 max-w-xs">
+                  <div className="flex items-center space-x-3">
+                    <div className="flex items-center justify-center w-8 h-8 bg-blue-500 rounded-full">
+                      <Mic className="h-4 w-4" />
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex items-center space-x-2 mb-1">
+                        <div className="flex space-x-1">
+                          {[...Array(5)].map((_, i) => (
+                            <div
+                              key={i}
+                              className="w-1 bg-white rounded-full"
+                              style={{
+                                height: `${8 + Math.sin(i * 0.5) * 4}px`
+                              }}
+                            />
+                          ))}
+                        </div>
+                        <span className="text-xs font-medium">
+                          {message.voiceDuration ? formatVoiceDuration(message.voiceDuration) : '0:03'}
+                        </span>
                       </div>
-                    )}
-                    
-                    {/* Image display */}
-                    {message.images && message.images.length > 0 && (
-                      <div className="mt-2 grid grid-cols-2 gap-2">
-                        {message.images.map((img, idx) => (
-                          <img key={idx} src={img} alt={`Uploaded ${idx}`} className="w-full h-20 object-cover rounded" />
+                    </div>
+                  </div>
+                  <div className="text-xs mt-2 opacity-75">
+                    {message.timestamp.toLocaleTimeString('de-DE', { 
+                      hour: '2-digit', 
+                      minute: '2-digit' 
+                    })}
+                  </div>
+                </Card>
+              ) : (
+                // Regular message bubble
+                <Card className={`flex-1 p-3 border border-gray-200 ${
+                  message.type === 'bot' 
+                    ? 'bg-white' 
+                    : 'bg-blue-50 border-blue-200'
+                }`}>
+                  <p className="text-sm text-gray-900">{message.content}</p>
+                  
+                  {/* Uploaded Photos Display */}
+                  {message.photos && message.photos.length > 0 && (
+                    <div className="mt-3">
+                      <div className="grid grid-cols-3 gap-2">
+                        {message.photos.map((photo) => (
+                          <div key={photo.id} className="relative">
+                            <img
+                              src={photo.url}
+                              alt={photo.name}
+                              className="w-full h-16 object-cover rounded-md border border-gray-200"
+                            />
+                            <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white text-xs p-1 rounded-b-md truncate">
+                              {photo.name}
+                            </div>
+                          </div>
                         ))}
                       </div>
-                    )}
-                    
-                    <p className="text-xs opacity-70 mt-1">
-                      {message.timestamp.toLocaleTimeString()}
-                    </p>
-                  </div>
-                </div>
-              ))}
-              
-              {isProcessing && (
-                <div className="flex justify-start">
-                  <div className="bg-gray-100 text-gray-900 px-4 py-3 rounded-lg">
-                    <div className="flex items-center space-x-2">
-                      <div className="flex space-x-1">
-                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-                      </div>
-                      <span className="text-sm">Verarbeite Spracheingabe...</span>
                     </div>
-                  </div>
-                </div>
-              )}
-              
-              <div ref={messagesEndRef} />
-            </div>
+                  )}
 
-            {/* Image preview */}
-            {uploadedImages.length > 0 && (
-              <div className="mb-4 p-3 bg-gray-50 rounded-lg">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm font-medium text-gray-700">Hochgeladene Bilder:</span>
-                </div>
-                <div className="grid grid-cols-3 gap-2">
-                  {uploadedImages.map((img, index) => (
-                    <div key={index} className="relative">
-                      <img src={img} alt={`Upload ${index}`} className="w-full h-16 object-cover rounded" />
-                      <Button
-                        size="sm"
-                        variant="destructive"
-                        className="absolute -top-1 -right-1 w-5 h-5 p-0"
-                        onClick={() => removeImage(index)}
-                      >
-                        <X className="h-3 w-3" />
-                      </Button>
+                  {/* Slideshow Display */}
+                  {message.slideshow && message.slideshow.length > 0 && (
+                    <div className="mt-3">
+                      <div className="flex items-center space-x-2 mb-2">
+                        <Play className="h-4 w-4 text-blue-600" />
+                        <span className="text-sm font-medium text-gray-700">Unfallsequenz</span>
+                      </div>
+                      <div className="grid grid-cols-2 gap-2">
+                        {message.slideshow.map((photo, index) => (
+                          <div key={photo.id} className="relative">
+                            <img
+                              src={photo.url}
+                              alt={`Unfallbild ${index + 1}`}
+                              className="w-full h-24 object-cover rounded-md border border-gray-200"
+                            />
+                            <div className="absolute bottom-1 right-1 bg-black bg-opacity-50 text-white text-xs px-1 py-0.5 rounded">
+                              {index + 1}
+                            </div>
+                            <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white text-xs p-1 rounded-b-md truncate">
+                              {photo.name}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
                     </div>
+                  )}
+
+                  <div className="text-xs text-gray-500 mt-2">
+                    {message.timestamp.toLocaleTimeString('de-DE', { 
+                      hour: '2-digit', 
+                      minute: '2-digit' 
+                    })}
+                  </div>
+                </Card>
+              )}
+            </div>
+          ))}
+          
+          {/* Processing Indicator */}
+          {isProcessing && (
+            <div className="flex items-start space-x-3">
+              <div className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center">
+                <Bot className="h-4 w-4" />
+              </div>
+              <Card className="p-3 bg-white border border-gray-200">
+                <div className="flex items-center space-x-2">
+                  <div className="flex space-x-1">
+                    <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce"></div>
+                    <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                    <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                  </div>
+                  <span className="text-sm text-gray-600">Ich höre zu und verarbeite Ihre Eingabe...</span>
+                </div>
+              </Card>
+            </div>
+          )}
+
+          {/* Loading Bubble */}
+          {showLoadingBubble && (
+            <div className="flex items-start space-x-3">
+              <div className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center">
+                <Bot className="h-4 w-4" />
+              </div>
+              <Card className="p-4 bg-white border border-gray-200">
+                <div className="flex items-center space-x-3">
+                  <div className="flex space-x-1">
+                    <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
+                    <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse" style={{ animationDelay: '0.1s' }}></div>
+                    <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse" style={{ animationDelay: '0.2s' }}></div>
+                  </div>
+                  <span className="text-sm text-gray-600">Analysiere Unfallsequenz...</span>
+                </div>
+              </Card>
+            </div>
+          )}
+
+          {/* Upload Options */}
+          {showUploadOptions && (
+            <div className="space-y-3">
+              <Card className="p-4 bg-white border border-gray-200">
+                <div className="space-y-3">
+                  <Button
+                    onClick={handlePhotoUpload}
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center space-x-2"
+                  >
+                    <Upload className="h-4 w-4" />
+                    <span>Unfallfotos hochladen</span>
+                  </Button>
+                  
+                  <Button
+                    onClick={handlePoliceReportUpload}
+                    variant="outline"
+                    className="w-full border-blue-300 text-blue-700 hover:bg-blue-50 flex items-center justify-center space-x-2"
+                  >
+                    <FileText className="h-4 w-4" />
+                    <span>Polizeibericht hochladen</span>
+                  </Button>
+                </div>
+              </Card>
+              
+              <Card className="p-3 bg-blue-50 border border-blue-200">
+                <p className="text-xs text-blue-700">
+                  Laden Sie bitte Fotos vom Unfallort und den Schäden hoch. Falls ein Polizeibericht vorliegt, fügen Sie diesen ebenfalls hinzu.
+                </p>
+              </Card>
+            </div>
+          )}
+
+          {/* Photo Upload Interface */}
+          {showPhotoUpload && (
+            <div className="space-y-4">
+              <Card className="p-4 bg-white border border-gray-200">
+                <div className="space-y-4">
+                  {/* Upload Buttons */}
+                  <div className="grid grid-cols-2 gap-3">
+                    <Button
+                      onClick={() => cameraInputRef.current?.click()}
+                      className="bg-blue-600 hover:bg-blue-700 text-white flex flex-col items-center justify-center h-20 space-y-1"
+                    >
+                      <Camera className="h-6 w-6" />
+                      <span className="text-xs">Kamera</span>
+                    </Button>
+                    
+                    <Button
+                      onClick={() => fileInputRef.current?.click()}
+                      variant="outline"
+                      className="border-blue-300 text-blue-700 hover:bg-blue-50 flex flex-col items-center justify-center h-20 space-y-1"
+                    >
+                      <Image className="h-6 w-6" />
+                      <span className="text-xs">Galerie</span>
+                    </Button>
+                  </div>
+
+                  {/* Uploaded Photos */}
+                  {uploadedPhotos.length > 0 && (
+                    <div>
+                      <h4 className="text-sm font-medium text-gray-700 mb-2">
+                        Hochgeladene Fotos ({uploadedPhotos.length})
+                      </h4>
+                      <div className="grid grid-cols-3 gap-2">
+                        {uploadedPhotos.map((photo) => (
+                          <div key={photo.id} className="relative group">
+                            <img
+                              src={photo.url}
+                              alt={photo.name}
+                              className="w-full h-20 object-cover rounded-md border border-gray-200"
+                            />
+                            <button
+                              onClick={() => removePhoto(photo.id)}
+                              className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                            >
+                              <X className="h-3 w-3" />
+                            </button>
+                            {uploadSuccess && uploadedPhotos.indexOf(photo) === uploadedPhotos.length - 1 && (
+                              <div className="absolute inset-0 bg-green-500 bg-opacity-20 rounded-md flex items-center justify-center">
+                                <CheckCircle className="h-6 w-6 text-green-600" />
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Continue Button */}
+                  {uploadedPhotos.length > 0 && (
+                    <Button
+                      onClick={handleContinueFromPhotos}
+                      className="w-full bg-green-600 hover:bg-green-700 text-white"
+                    >
+                      Weiter
+                    </Button>
+                  )}
+                </div>
+              </Card>
+
+              {/* Hidden File Inputs */}
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                multiple
+                onChange={(e) => handleFileSelect(e, false)}
+                className="hidden"
+              />
+              <input
+                ref={cameraInputRef}
+                type="file"
+                accept="image/*"
+                capture="environment"
+                onChange={(e) => handleFileSelect(e, true)}
+                className="hidden"
+              />
+            </div>
+          )}
+          
+          <div ref={messagesEndRef} />
+        </div>
+
+        {/* Voice Input Interface */}
+        {canRecord && (
+          <Card className="p-6 bg-white border-0 shadow-lg">
+            <div className="text-center">
+              
+              {/* Microphone Button */}
+              <div className="relative mb-4">
+                <div className={`
+                  w-20 h-20 mx-auto rounded-full flex items-center justify-center transition-all duration-300
+                  ${isRecording 
+                    ? 'bg-red-500 shadow-lg animate-pulse' 
+                    : 'bg-blue-600 hover:bg-blue-700 active:scale-95'
+                  }
+                `}>
+                  <Button
+                    variant="ghost"
+                    size="lg"
+                    onClick={isRecording ? stopRecording : startRecording}
+                    disabled={isProcessing}
+                    className="w-full h-full text-white hover:text-white hover:bg-transparent"
+                  >
+                    {isRecording ? <MicOff className="h-8 w-8" /> : <Mic className="h-8 w-8" />}
+                  </Button>
+                </div>
+                
+                {/* Recording Animation */}
+                {isRecording && (
+                  <div className="absolute inset-0 w-20 h-20 mx-auto rounded-full border-4 border-red-300 animate-ping opacity-75"></div>
+                )}
+              </div>
+
+              {/* Status Text */}
+              <div className="mb-4">
+                {isRecording ? (
+                  <div className="flex items-center justify-center space-x-2">
+                    <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+                    <span className="text-sm text-red-600 font-medium">Ich höre zu...</span>
+                  </div>
+                ) : isProcessing ? (
+                  <span className="text-sm text-blue-600">Verarbeite Ihre Nachricht...</span>
+                ) : (
+                  <span className="text-sm text-gray-600">Tippen Sie, um zu sprechen</span>
+                )}
+              </div>
+
+              {/* Voice Waves Animation */}
+              {isRecording && (
+                <div className="flex items-center justify-center space-x-1 mb-4">
+                  {[...Array(5)].map((_, i) => (
+                    <div
+                      key={i}
+                      className="w-1 bg-red-500 rounded-full animate-pulse"
+                      style={{
+                        height: `${12 + Math.sin(Date.now() * 0.01 + i) * 8}px`,
+                        animationDelay: `${i * 0.1}s`,
+                        animationDuration: '0.8s'
+                      }}
+                    ></div>
                   ))}
                 </div>
-              </div>
-            )}
-
-            {/* Input area */}
-            <div className="border-t pt-4">
-              <div className="flex items-end space-x-2">
-                <input
-                  type="file"
-                  ref={fileInputRef}
-                  onChange={handleImageUpload}
-                  accept="image/*"
-                  multiple
-                  className="hidden"
-                />
-                
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => fileInputRef.current?.click()}
-                  className="flex-shrink-0"
-                >
-                  <Camera className="h-4 w-4" />
-                </Button>
-
-                <div className="flex-1 flex items-end space-x-2">
-                  <textarea
-                    value={inputText}
-                    onChange={(e) => setInputText(e.target.value)}
-                    placeholder="Beschreiben Sie Ihren Schaden..."
-                    className="flex-1 p-3 border border-gray-300 rounded-lg resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    rows={1}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' && !e.shiftKey) {
-                        e.preventDefault();
-                        handleSendMessage(inputText);
-                      }
-                    }}
-                  />
-                </div>
-
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={isRecording ? stopRecording : startRecording}
-                  className={`flex-shrink-0 ${isRecording ? 'bg-red-100 text-red-600' : ''}`}
-                  disabled={isProcessing}
-                >
-                  {isRecording ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
-                </Button>
-
-                <Button
-                  onClick={() => handleSendMessage(inputText)}
-                  disabled={!inputText.trim() || isProcessing}
-                  className="flex-shrink-0"
-                  style={{ backgroundColor: '#064E9C' }}
-                >
-                  <Send className="h-4 w-4" />
-                </Button>
-              </div>
+              )}
             </div>
+          </Card>
+        )}
 
-            {/* Submit button for completed claims */}
-            {currentStep >= 3 && (
-              <div className="mt-4 pt-4 border-t">
-                <Button
-                  onClick={handleSubmit}
-                  className="w-full bg-green-600 hover:bg-green-700"
-                >
-                  <CheckCircle className="h-4 w-4 mr-2" />
-                  Schadensmeldung abschließen
-                </Button>
+        {/* Completion State */}
+        {currentStep === 'completed' && (
+          <Card className="p-6 bg-green-50 border-green-200">
+            <div className="text-center">
+              <div className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg className="h-8 w-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
               </div>
-            )}
-          </CardContent>
-        </Card>
+              <h3 className="text-lg font-semibold text-green-800 mb-2">Meldung übermittelt</h3>
+              <p className="text-sm text-green-700">
+                Sie werden automatisch zur Analyse weitergeleitet...
+              </p>
+            </div>
+          </Card>
+        )}
+
+        {/* Trust Indicators */}
+        <div className="mt-6 text-center">
+          <div className="flex items-center justify-center space-x-4 text-xs text-gray-500">
+            <div className="flex items-center space-x-1">
+              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+              <span>Sichere Übertragung</span>
+            </div>
+            <div className="flex items-center space-x-1">
+              <Bot className="h-3 w-3" />
+              <span>KI-unterstützt</span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
