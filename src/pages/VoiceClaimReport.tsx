@@ -13,6 +13,7 @@ interface Message {
   photos?: UploadedPhoto[];
   isVoice?: boolean;
   voiceDuration?: number;
+  isVideo?: boolean;
 }
 
 interface UploadedPhoto {
@@ -81,14 +82,15 @@ const VoiceClaimReport = () => {
     scrollToBottom();
   }, [messages]);
 
-  const addBotMessage = (content: string, slideshow?: UploadedPhoto[], photos?: UploadedPhoto[]) => {
+  const addBotMessage = (content: string, slideshow?: UploadedPhoto[], photos?: UploadedPhoto[], isVideo?: boolean) => {
     const newMessage: Message = {
       id: Date.now().toString(),
       type: 'bot',
       content,
       timestamp: new Date(),
       slideshow,
-      photos
+      photos,
+      isVideo
     };
     setMessages(prev => [...prev, newMessage]);
   };
@@ -307,10 +309,10 @@ const VoiceClaimReport = () => {
   const startSlideshow = () => {
     const sortedPhotos = [...uploadedPhotos].sort((a, b) => a.name.localeCompare(b.name));
     
-    // Add slideshow to chat history
-    addBotMessage('Basierend auf Ihren Angaben und den Fotos, ist der Unfall so abgelaufen:', sortedPhotos);
+    // Add video placeholder to chat history instead of slideshow
+    addBotMessage('Basierend auf Ihren Angaben und den Fotos, ist der Unfall so abgelaufen:', undefined, undefined, true);
     
-    // Show confirmation question after slideshow
+    // Show confirmation question after video placeholder
     setTimeout(() => {
       addBotMessage('Bestätigen Sie bitte, dass der Unfall so abgelaufen ist, wie in der Sequenz gezeigt, damit wir Ihre Schadensmeldung weiterleiten können.');
       setCurrentStep('slideshow_confirm');
@@ -426,29 +428,20 @@ const VoiceClaimReport = () => {
                     </div>
                   )}
 
-                  {/* Slideshow Display */}
-                  {message.slideshow && message.slideshow.length > 0 && (
+                  {/* Video Placeholder Display */}
+                  {message.isVideo && (
                     <div className="mt-3">
                       <div className="flex items-center space-x-2 mb-2">
                         <Play className="h-4 w-4 text-blue-600" />
                         <span className="text-sm font-medium text-gray-700">Unfallsequenz</span>
                       </div>
-                      <div className="grid grid-cols-2 gap-2">
-                        {message.slideshow.map((photo, index) => (
-                          <div key={photo.id} className="relative">
-                            <img
-                              src={photo.url}
-                              alt={`Unfallbild ${index + 1}`}
-                              className="w-full h-24 object-cover rounded-md border border-gray-200"
-                            />
-                            <div className="absolute bottom-1 right-1 bg-black bg-opacity-50 text-white text-xs px-1 py-0.5 rounded">
-                              {index + 1}
-                            </div>
-                            <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white text-xs p-1 rounded-b-md truncate">
-                              {photo.name}
-                            </div>
+                      <div className="relative bg-gray-300 rounded-md aspect-video flex items-center justify-center">
+                        <div className="flex flex-col items-center space-y-2">
+                          <div className="w-12 h-12 bg-gray-500 rounded-full flex items-center justify-center">
+                            <Play className="h-6 w-6 text-white ml-1" />
                           </div>
-                        ))}
+                          <span className="text-xs text-gray-600">Video abspielen</span>
+                        </div>
                       </div>
                     </div>
                   )}
