@@ -1,7 +1,8 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { CheckCircle, FileText, Camera, MessageSquare, User, Car, Clock, MapPin, Users, AlertTriangle, Euro } from 'lucide-react';
+import { CheckCircle, FileText, Camera, MessageSquare, User, Car, Clock, MapPin, Users, AlertTriangle, Euro, PenTool } from 'lucide-react';
+
 interface ClaimData {
   description: string;
   photos: string[];
@@ -51,6 +52,29 @@ const ClaimPreview = ({
     insurance: "DEVK Versicherung",
     phone: "+49 160 98765432"
   }];
+
+  // Accident sketches data
+  const accidentSketches = [
+    {
+      id: 1,
+      title: "Ausgangssituation",
+      description: "Beide Fahrzeuge nähern sich der Kreuzung",
+      imageUrl: "/lovable-uploads/6a2adcb4-5fb2-47d6-83fe-144d2de284d5.png"
+    },
+    {
+      id: 2,
+      title: "Moment vor dem Unfall",
+      description: "Das andere Fahrzeug übersieht das Vorfahrtsschild",
+      imageUrl: "/lovable-uploads/72bb707e-8a75-404f-b46a-e70cfba613e5.png"
+    },
+    {
+      id: 3,
+      title: "Kollisionspunkt",
+      description: "Zusammenstoß an der Kreuzung",
+      imageUrl: "/lovable-uploads/2d46931e-fa33-4722-9592-e532accac721.png"
+    }
+  ];
+
   return <div className="space-y-4 md:space-y-6">
       <div className="text-center px-4">
         <h3 className="text-xl md:text-2xl font-bold mb-2">Schadensmeldung - Vollständige Zusammenfassung</h3>
@@ -192,7 +216,10 @@ const ClaimPreview = ({
       {/* Unfallhergang */}
       <Card>
         <CardHeader className="pb-3 md:pb-6">
-          
+          <CardTitle className="flex items-center space-x-2 text-lg md:text-xl">
+            <MessageSquare className="h-4 w-4 md:h-5 md:w-5 text-blue-600" />
+            <span>Unfallhergang</span>
+          </CardTitle>
         </CardHeader>
         <CardContent className="pt-0">
           <div className="bg-gray-50 p-3 md:p-4 rounded-md">
@@ -242,6 +269,52 @@ const ClaimPreview = ({
                   </div>)}
               </div>
             </div>}
+        </CardContent>
+      </Card>
+
+      {/* Unfallskizzen */}
+      <Card>
+        <CardHeader className="pb-3 md:pb-6">
+          <CardTitle className="flex items-center space-x-2 text-lg md:text-xl">
+            <PenTool className="h-4 w-4 md:h-5 md:w-5 text-blue-600" />
+            <span>Automatisch erstellte Unfallskizzen</span>
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="pt-0">
+          <div className="mb-4">
+            <p className="text-xs md:text-sm text-gray-600 mb-4">
+              Basierend auf Ihrer Beschreibung hat unser System automatisch Skizzen des Unfallhergangs erstellt:
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
+            {accidentSketches.map((sketch, index) => (
+              <div key={sketch.id} className="relative">
+                <div className="bg-white border-2 border-gray-200 rounded-lg p-4">
+                  <img 
+                    src={sketch.imageUrl} 
+                    alt={sketch.title} 
+                    className="w-full h-32 md:h-40 object-contain rounded-md mb-3"
+                  />
+                  <div className="text-center">
+                    <h6 className="font-medium text-sm md:text-base text-gray-800 mb-1">
+                      {index + 1}. {sketch.title}
+                    </h6>
+                    <p className="text-xs md:text-sm text-gray-600">
+                      {sketch.description}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+          
+          <div className="mt-4 p-3 bg-blue-50 rounded-md">
+            <p className="text-xs md:text-sm text-blue-700">
+              <strong>Hinweis:</strong> Diese Skizzen wurden automatisch basierend auf Ihrer Unfallbeschreibung erstellt. 
+              Sie dienen zur Veranschaulichung des Hergangs und werden Ihrer Versicherung zur Verfügung gestellt.
+            </p>
+          </div>
         </CardContent>
       </Card>
 
