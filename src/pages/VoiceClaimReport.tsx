@@ -345,10 +345,10 @@ const VoiceClaimReport = () => {
 
   return (
     <div className="h-full bg-gradient-to-br from-blue-50 to-indigo-100">
-      <div className="h-full px-4 py-4 max-w-md mx-auto flex flex-col">
+      <div className="h-full max-w-md mx-auto flex flex-col">
         
-        {/* Updated Header to match reference */}
-        <div className="h-[50px] flex items-center justify-between mb-4 bg-white rounded-lg shadow-sm px-4">
+        {/* Updated Header - Full Width */}
+        <div className="h-[50px] flex items-center justify-between bg-white shadow-sm px-4">
           {/* Close Button - Left */}
           <Button 
             variant="ghost" 
@@ -383,7 +383,7 @@ const VoiceClaimReport = () => {
         </div>
 
         {/* Chat Messages */}
-        <div className="flex-1 overflow-y-auto space-y-4 mb-4">
+        <div className="flex-1 overflow-y-auto space-y-4 p-4">
           {messages.map((message) => (
             <div key={message.id} className={`flex items-start space-x-3 ${message.type === 'user' ? 'flex-row-reverse space-x-reverse' : ''}`}>
               <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
@@ -644,87 +644,85 @@ const VoiceClaimReport = () => {
           <div ref={messagesEndRef} />
         </div>
 
-        {/* Voice Input Interface - Full Width CTA */}
+        {/* Voice Input Interface - Full Width CTA without white background */}
         {canRecord && (
-          <Card className="p-4 bg-white border-0 shadow-lg">
-            <div className="space-y-3">
-              
-              {/* Full Width Microphone Button */}
-              <Button
-                onClick={isRecording ? stopRecording : startRecording}
-                disabled={isProcessing}
-                className={`
-                  w-full h-12 rounded-full transition-all duration-300 flex items-center justify-center space-x-2
-                  ${isRecording 
-                    ? 'bg-red-500 hover:bg-red-600 animate-pulse text-white' 
-                    : 'bg-blue-600 hover:bg-blue-700 text-white'
-                  }
-                `}
-              >
+          <div className="p-4">
+            <Button
+              onClick={isRecording ? stopRecording : startRecording}
+              disabled={isProcessing}
+              className={`
+                w-full h-16 rounded-full transition-all duration-300 flex flex-col items-center justify-center
+                ${isRecording 
+                  ? 'bg-red-500 hover:bg-red-600 animate-pulse text-white' 
+                  : 'bg-blue-600 hover:bg-blue-700 text-white'
+                }
+              `}
+            >
+              <div className="flex items-center space-x-2 mb-1">
                 {isRecording ? <MicOff className="h-5 w-5" /> : <Mic className="h-5 w-5" />}
-                <span className="text-sm font-medium">
+                <span className="text-lg font-medium">
                   {isRecording ? 'Stoppen' : 'Sprechen'}
                 </span>
-              </Button>
-
-              {/* Centered Text Below */}
-              <div className="text-center">
-                <span className="text-xs text-gray-500">Tippen Sie, um zu sprechen.</span>
               </div>
+              <span className="text-xs opacity-80">
+                Tippen Sie, um zu sprechen.
+              </span>
+            </Button>
 
-              {/* Status Text */}
-              {(isRecording || isProcessing) && (
-                <div className="text-center">
-                  {isRecording ? (
-                    <div className="flex items-center justify-center space-x-2">
-                      <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
-                      <span className="text-xs text-red-600 font-medium">Ich höre zu...</span>
-                    </div>
-                  ) : isProcessing ? (
-                    <span className="text-xs text-blue-600">Verarbeite Ihre Nachricht...</span>
-                  ) : null}
-                </div>
-              )}
+            {/* Status Text */}
+            {(isRecording || isProcessing) && (
+              <div className="text-center mt-3">
+                {isRecording ? (
+                  <div className="flex items-center justify-center space-x-2">
+                    <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+                    <span className="text-xs text-red-600 font-medium">Ich höre zu...</span>
+                  </div>
+                ) : isProcessing ? (
+                  <span className="text-xs text-blue-600">Verarbeite Ihre Nachricht...</span>
+                ) : null}
+              </div>
+            )}
 
-              {/* Voice Waves Animation */}
-              {isRecording && (
-                <div className="flex items-center justify-center space-x-1">
-                  {[...Array(5)].map((_, i) => (
-                    <div
-                      key={i}
-                      className="w-1 bg-red-500 rounded-full animate-pulse"
-                      style={{
-                        height: `${12 + Math.sin(Date.now() * 0.01 + i) * 8}px`,
-                        animationDelay: `${i * 0.1}s`,
-                        animationDuration: '0.8s'
-                      }}
-                    ></div>
-                  ))}
-                </div>
-              )}
-            </div>
-          </Card>
+            {/* Voice Waves Animation */}
+            {isRecording && (
+              <div className="flex items-center justify-center space-x-1 mt-3">
+                {[...Array(5)].map((_, i) => (
+                  <div
+                    key={i}
+                    className="w-1 bg-red-500 rounded-full animate-pulse"
+                    style={{
+                      height: `${12 + Math.sin(Date.now() * 0.01 + i) * 8}px`,
+                      animationDelay: `${i * 0.1}s`,
+                      animationDuration: '0.8s'
+                    }}
+                  ></div>
+                ))}
+              </div>
+            )}
+          </div>
         )}
 
         {/* Completion State */}
         {currentStep === 'completed' && (
-          <Card className="p-6 bg-green-50 border-green-200">
-            <div className="text-center">
-              <div className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg className="h-8 w-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
+          <div className="p-4">
+            <Card className="p-6 bg-green-50 border-green-200">
+              <div className="text-center">
+                <div className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <svg className="h-8 w-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+                <h3 className="text-lg font-semibold text-green-800 mb-2">Meldung übermittelt</h3>
+                <p className="text-sm text-green-700">
+                  Sie werden automatisch zur Analyse weitergeleitet...
+                </p>
               </div>
-              <h3 className="text-lg font-semibold text-green-800 mb-2">Meldung übermittelt</h3>
-              <p className="text-sm text-green-700">
-                Sie werden automatisch zur Analyse weitergeleitet...
-              </p>
-            </div>
-          </Card>
+            </Card>
+          </div>
         )}
 
         {/* Trust Indicators */}
-        <div className="mt-4 text-center">
+        <div className="p-4 text-center">
           <div className="flex items-center justify-center space-x-4 text-xs text-gray-500">
             <div className="flex items-center space-x-1">
               <div className="w-2 h-2 bg-green-500 rounded-full"></div>
