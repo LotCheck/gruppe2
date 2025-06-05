@@ -347,27 +347,29 @@ const VoiceClaimReport = () => {
       <div className="h-full max-w-md mx-auto flex flex-col">
         
         {/* Updated Header - Full Width */}
-        <div className="h-[50px] flex items-center justify-between bg-white shadow-sm px-4">
+        <div className="h-[56px] flex items-center justify-between px-4 bg-white shadow-sm">
           {/* Close Button - Left */}
           <Button variant="ghost" size="sm" onClick={() => navigate('/')} className="p-2 hover:bg-gray-100">
-            <X className="h-5 w-5 text-gray-600" />
+            <X className="h-6 w-6 text-gray-600" />
           </Button>
 
-          {/* Center - Sophie für Versicherungen with star icon and phone */}
-          <div className="flex flex-col items-center">
-            <div className="flex items-center space-x-1">
-              <Star className="h-4 w-4 text-blue-600 fill-blue-600" />
-              <h1 className="text-sm font-semibold text-gray-900">
-                Sophie für Versicherungen
-              </h1>
-            </div>
+          {/* Center - Sterne und Sophie für Versicherungen */}
+          <div className="flex items-center flex-1 justify-center">
+            {/* Orange Stern */}
+            <svg xmlns="http://www.w3.org/2000/svg" height="18" viewBox="0 0 10 10" width="18"><g><path d="M4.905 0.176L5.577 2.409c.187.622.681 1.108 1.312 1.293l2.266.662c.238.07.238.401 0 .471l-2.266.662c-.631.185-1.125.672-1.312 1.294l-.672 2.233c-.07.234-.407.234-.477 0l-.672-2.233c-.187-.622-.681-1.108-1.312-1.293l-2.266-.662c-.238-.07-.238-.401 0-.471l2.266-.662c.631-.185 1.125-.672 1.312-1.294l.672-2.233c.07-.234.407-.234.477 0z" fill="#F07C00"/></g></svg>
+            {/* Blauer Stern */}
+            <svg xmlns="http://www.w3.org/2000/svg" height="18" viewBox="0 0 21 23" width="18"><g><path d="M13.251 7.208l1.176 3.908c.327 1.089 1.191 1.941 2.296 2.264l3.965 1.159c.416.122.416.703 0 .824l-3.965 1.159c-1.105.323-1.969 1.175-2.296 2.264l-1.176 3.908c-.123.41-.712.41-.835 0l-1.176-3.908c-.327-1.089-1.191-1.941-2.296-2.264l-3.965-1.159c-.416-.121-.416-.702 0-.824l3.965-1.159c1.105-.323 1.969-1.175 2.296-2.264l1.176-3.908c.123-.41.712-.41.835 0z" fill="#005C61"/></g></svg>
+            <span className="text-base font-medium text-gray-900 ml-1">Sophie für Versicherungen</span>
           </div>
 
           {/* Menu Button - Right (3 vertical dots) */}
           <Button variant="ghost" size="sm" className="p-2 hover:bg-gray-100">
-            <MoreVertical className="h-5 w-5 text-gray-600" />
+            <MoreVertical className="h-6 w-6 text-gray-600" />
           </Button>
         </div>
+
+        {/* Unterzeile: ID */}
+        <div className="text-center text-xs text-gray-400 pb-1 pt-0.5" style={{letterSpacing: '0.5px'}}>2.45.4/8c39439</div>
 
         {/* Chat Messages */}
         <div className="flex-1 overflow-y-auto space-y-4 p-4">
