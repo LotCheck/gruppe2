@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Play, RotateCcw } from 'lucide-react';
 
@@ -26,7 +25,7 @@ const AccidentSequenceSlideshow = ({ images, onComplete }: AccidentSequenceSlide
           }
           return nextIndex;
         });
-      }, 200); // 0.2 seconds interval
+      }, 400); // Changed from 200ms to 400ms (doubled the time)
 
       return () => clearInterval(interval);
     }
