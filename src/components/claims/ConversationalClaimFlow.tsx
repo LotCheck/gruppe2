@@ -154,7 +154,14 @@ const ConversationalClaimFlow = () => {
           
           // Mock AI photo analysis
           setTimeout(() => {
-            addMessage("Perfekt! Ich kann auf dem Foto den Frontschaden deutlich erkennen. Das sieht nach einem mittleren Schaden aus. Haben Sie noch weitere Fotos?", 'bot');
+            addMessage("Perfekt! Ich kann auf dem Foto den Frontschaden deutlich erkennen. Das sieht nach einem mittleren Schaden aus.", 'bot');
+            
+            // After first photo, ask for more or offer to continue
+            setTimeout(() => {
+              if (claimData.photos.length === 0) { // This will be 1 after the photo is added
+                addMessage("Haben Sie noch weitere Fotos? Zum Beispiel eine Übersichtsaufnahme des ganzen Fahrzeugs oder vom Unfallort? Falls nicht, können Sie auch direkt fortfahren.", 'bot');
+              }
+            }, 2000);
           }, 1500);
         };
         reader.readAsDataURL(file);
@@ -169,13 +176,22 @@ const ConversationalClaimFlow = () => {
     }, 2000);
   };
 
+  const finishPhotoUpload = () => {
+    simulateTyping(() => {
+      addMessage("Vielen Dank für die Fotos! Ich habe alle Informationen, die ich für Ihren Schadensbericht benötige. Lassen Sie mich das jetzt für Sie zusammenstellen.", 'bot');
+      setTimeout(() => {
+        generateReport();
+      }, 1500);
+    });
+  };
+
   // Mock function to show next step
   const handleTestNext = () => {
     if (currentPhase === 'conversation') {
       setCurrentPhase('upload');
       addMessage("Perfekt! Jetzt können Sie Fotos vom Schaden hochladen.", 'bot');
     } else if (currentPhase === 'upload') {
-      generateReport();
+      finishPhotoUpload();
     }
   };
 
@@ -267,7 +283,7 @@ const ConversationalClaimFlow = () => {
                   <h4 className="font-medium text-blue-800">Fotos hochladen</h4>
                 </div>
                 
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-2 gap-3 mb-3">
                   <Button
                     variant="outline"
                     onClick={() => fileInputRef.current?.click()}
@@ -292,11 +308,11 @@ const ConversationalClaimFlow = () => {
                 </div>
                 
                 {claimData.photos.length > 0 && (
-                  <div className="mt-3">
+                  <div className="mb-3">
                     <p className="text-sm text-green-600 mb-2">
                       ✓ {claimData.photos.length} Foto(s) hochgeladen
                     </p>
-                    <div className="grid grid-cols-3 gap-2">
+                    <div className="grid grid-cols-3 gap-2 mb-3">
                       {claimData.photos.map((photo, index) => (
                         <img
                           key={index}
@@ -306,6 +322,15 @@ const ConversationalClaimFlow = () => {
                         />
                       ))}
                     </div>
+                    
+                    {/* Fertig Button - appears after photos are uploaded */}
+                    <Button 
+                      onClick={finishPhotoUpload}
+                      className="w-full bg-green-600 hover:bg-green-700 text-white"
+                    >
+                      <CheckCircle className="h-4 w-4 mr-2" />
+                      Fertig - Schadensbericht erstellen
+                    </Button>
                   </div>
                 )}
                 
