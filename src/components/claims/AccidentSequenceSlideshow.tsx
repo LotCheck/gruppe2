@@ -76,7 +76,7 @@ const AccidentSequenceSlideshow = ({
             <div className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center">
               <RotateCcw className="h-6 w-6 text-white" />
             </div>
-            <span className="text-sm text-gray-800 font-medium">Erneut abspielen</span>
+            
           </button>
         </div>}
     </div>;
