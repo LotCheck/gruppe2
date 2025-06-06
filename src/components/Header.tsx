@@ -1,3 +1,4 @@
+
 import React from 'react';
 
 const Header = () => {
@@ -16,10 +17,12 @@ const Header = () => {
         </div>
         {/* Center: Logo + Product Name */}
         <div className="flex items-center gap-3">
-          <a href="https://www.check24.de/" id="c24m-logo" title="CHECK24 - Deutschlands größtes Vergleichsportal" className="block" style={{ minWidth: 90, minHeight: 24 }}>
-            <svg width="90" height="24" viewBox="0 0 180 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <text x="0" y="20" fontFamily="Arial Black, Arial, sans-serif" fontWeight="bold" fontSize="20" fill="#fff">CHECK24</text>
-            </svg>
+          <a href="https://www.check24.de/" id="c24m-logo" title="CHECK24 - Deutschlands größtes Vergleichsportal" className="block">
+            <img 
+              src="/lovable-uploads/9c693a2a-f5fa-4afb-a032-4b0b1828adc0.png" 
+              alt="CHECK24 Logo" 
+              className="h-7"
+            />
           </a>
           <div id="c24m-product-name" className="text-lg font-semibold text-white">Kfz-Versicherung</div>
         </div>
