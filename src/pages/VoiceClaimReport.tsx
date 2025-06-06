@@ -4,6 +4,8 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Mic, MicOff, Bot, Upload, FileText, Camera, Image, X, Check, User, Play, Star, Menu, MoreVertical, ZoomIn } from 'lucide-react';
 import AccidentSequenceSlideshow from '@/components/claims/AccidentSequenceSlideshow';
+import TypingEffect from '@/components/claims/TypingEffect';
+
 interface Message {
   id: string;
   type: 'bot' | 'user';
@@ -144,9 +146,13 @@ const VoiceClaimReport = () => {
     }
   }, [messages]);
 
+  // New state to track if a message has completed typing
+  const [completedTyping, setCompletedTyping] = useState<{[key: string]: boolean}>({});
+
   const addBotMessage = (content: string, slideshow?: UploadedPhoto[], photos?: UploadedPhoto[], isVideo?: boolean) => {
+    const messageId = Date.now().toString();
     const newMessage: Message = {
-      id: Date.now().toString(),
+      id: messageId,
       type: 'bot',
       content,
       timestamp: new Date(),
@@ -155,11 +161,20 @@ const VoiceClaimReport = () => {
       isVideo
     };
     setMessages(prev => [...prev, newMessage]);
+    
+    // Mark this message as not completed typing yet
+    setCompletedTyping(prev => ({...prev, [messageId]: false}));
 
     // Force scroll after adding message
     setTimeout(() => {
       scrollToBottom();
     }, 50);
+    
+    // Mark as completed after estimated typing time
+    const typingTime = Math.min(content.length * 30, 3000); // Cap at 3 seconds
+    setTimeout(() => {
+      setCompletedTyping(prev => ({...prev, [messageId]: true}));
+    }, typingTime);
   };
   const addUserMessage = (content: string, isVoice: boolean = false, duration?: number) => {
     const newMessage: Message = {
@@ -421,8 +436,8 @@ const VoiceClaimReport = () => {
               </div>
               
               {message.isVoice && message.type === 'user' ?
-          // Voice message bubble for user
-          <Card className="flex-1 p-3 bg-blue-600 text-white border-0 max-w-xs">
+                // Voice message bubble for user
+                <Card className="flex-1 p-3 bg-blue-600 text-white border-0 max-w-xs">
                   <div className="flex items-center space-x-3">
                     <div className="flex items-center justify-center w-8 h-8 bg-blue-500 rounded-full">
                       <Mic className="h-4 w-4" />
@@ -447,9 +462,17 @@ const VoiceClaimReport = () => {
               })}
                   </div>
                 </Card> :
-          // Regular message bubble
-          <Card className={`flex-1 p-3 border border-gray-200 ${message.type === 'bot' ? 'bg-white' : 'bg-blue-50 border-blue-200'}`}>
-                  <p className="text-sm text-gray-900">{message.content}</p>
+                // Regular message bubble - Modified for typing effect
+                <Card className={`flex-1 p-3 border border-gray-200 ${message.type === 'bot' ? 'bg-white' : 'bg-blue-50 border-blue-200'}`}>
+                  <p className="text-sm text-gray-900">
+                    {message.type === 'bot' ? (
+                      completedTyping[message.id] ? 
+                        message.content : 
+                        <TypingEffect text={message.content} typingSpeed={20} />
+                    ) : (
+                      message.content
+                    )}
+                  </p>
                   
                   {/* Uploaded Photos Display */}
                   {message.photos && message.photos.length > 0 && <div className="mt-3">
