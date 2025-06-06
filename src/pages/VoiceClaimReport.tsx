@@ -5,7 +5,6 @@ import { Card } from '@/components/ui/card';
 import { Mic, MicOff, Bot, Upload, FileText, Camera, Image, X, Check, User, Play, Star, Menu, MoreVertical, ZoomIn } from 'lucide-react';
 import AccidentSequenceSlideshow from '@/components/claims/AccidentSequenceSlideshow';
 import TypingEffect from '@/components/claims/TypingEffect';
-
 interface Message {
   id: string;
   type: 'bot' | 'user';
@@ -107,48 +106,33 @@ const VoiceClaimReport = () => {
 
   // Play sound for the very first bot message
   useEffect(() => {
-    if (
-      messages.length === 1 &&
-      messages[0].type === 'bot' &&
-      messages[0].content.startsWith('Hallo! Es tut mir leid zu hören, dass Sie einen Unfall hatten')
-    ) {
+    if (messages.length === 1 && messages[0].type === 'bot' && messages[0].content.startsWith('Hallo! Es tut mir leid zu hören, dass Sie einen Unfall hatten')) {
       setTimeout(() => {
         const audio = new Audio('/sound/1.m4a');
         audio.play();
       }, 1500);
     }
     // Play sound for the second bot message
-    if (
-      messages.length > 1 &&
-      messages[messages.length - 1].type === 'bot' &&
-      messages[messages.length - 1].content.startsWith('Vielen Dank für Ihre Schilderung. Können Sie mir bitte sagen')
-    ) {
+    if (messages.length > 1 && messages[messages.length - 1].type === 'bot' && messages[messages.length - 1].content.startsWith('Vielen Dank für Ihre Schilderung. Können Sie mir bitte sagen')) {
       const audio = new Audio('/sound/2.m4a');
       audio.play();
     }
     // Play sound for the third bot message
-    if (
-      messages.length > 1 &&
-      messages[messages.length - 1].type === 'bot' &&
-      messages[messages.length - 1].content.startsWith('Danke für die Information. Gab es außer Ihnen noch')
-    ) {
+    if (messages.length > 1 && messages[messages.length - 1].type === 'bot' && messages[messages.length - 1].content.startsWith('Danke für die Information. Gab es außer Ihnen noch')) {
       const audio = new Audio('/sound/3.m4a');
       audio.play();
     }
     // Play sound for the fourth bot message
-    if (
-      messages.length > 1 &&
-      messages[messages.length - 1].type === 'bot' &&
-      messages[messages.length - 1].content.startsWith('Das hilft uns schon sehr weiter. Um Ihre Schadensmeldung')
-    ) {
+    if (messages.length > 1 && messages[messages.length - 1].type === 'bot' && messages[messages.length - 1].content.startsWith('Das hilft uns schon sehr weiter. Um Ihre Schadensmeldung')) {
       const audio = new Audio('/sound/4.m4a');
       audio.play();
     }
   }, [messages]);
 
   // New state to track if a message has completed typing
-  const [completedTyping, setCompletedTyping] = useState<{[key: string]: boolean}>({});
-
+  const [completedTyping, setCompletedTyping] = useState<{
+    [key: string]: boolean;
+  }>({});
   const addBotMessage = (content: string, slideshow?: UploadedPhoto[], photos?: UploadedPhoto[], isVideo?: boolean) => {
     const messageId = Date.now().toString();
     const newMessage: Message = {
@@ -161,19 +145,25 @@ const VoiceClaimReport = () => {
       isVideo
     };
     setMessages(prev => [...prev, newMessage]);
-    
+
     // Mark this message as not completed typing yet
-    setCompletedTyping(prev => ({...prev, [messageId]: false}));
+    setCompletedTyping(prev => ({
+      ...prev,
+      [messageId]: false
+    }));
 
     // Force scroll after adding message
     setTimeout(() => {
       scrollToBottom();
     }, 50);
-    
+
     // Mark as completed after estimated typing time
     const typingTime = Math.min(content.length * 30, 3000); // Cap at 3 seconds
     setTimeout(() => {
-      setCompletedTyping(prev => ({...prev, [messageId]: true}));
+      setCompletedTyping(prev => ({
+        ...prev,
+        [messageId]: true
+      }));
     }, typingTime);
   };
   const addUserMessage = (content: string, isVoice: boolean = false, duration?: number) => {
@@ -185,7 +175,7 @@ const VoiceClaimReport = () => {
       isVoice,
       voiceDuration: duration
     };
-    setMessages(prev => [...prev, newMessage]); 
+    setMessages(prev => [...prev, newMessage]);
 
     // Force scroll after adding message
     setTimeout(() => {
@@ -413,9 +403,9 @@ const VoiceClaimReport = () => {
           {/* Center - Sterne und Sophie für Versicherungen */}
           <div className="flex items-center flex-1 justify-center">
             {/* Orange Stern */}
-            <svg xmlns="http://www.w3.org/2000/svg" height="18" viewBox="0 0 10 10" width="18"><g><path d="M4.905 0.176L5.577 2.409c.187.622.681 1.108 1.312 1.293l2.266.662c.238.07.238.401 0 .471l-2.266.662c-.631.185-1.125.672-1.312 1.294l-.672 2.233c-.07.234-.407.234-.477 0l-.672-2.233c-.187-.622-.681-1.108-1.312-1.293l-2.266-.662c-.238-.07-.238-.401 0-.471l2.266-.662c.631-.185 1.125-.672 1.312-1.294l.672-2.233c.07-.234.407-.234.477 0z" fill="#F07C00"/></g></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" height="18" viewBox="0 0 10 10" width="18"><g><path d="M4.905 0.176L5.577 2.409c.187.622.681 1.108 1.312 1.293l2.266.662c.238.07.238.401 0 .471l-2.266.662c-.631.185-1.125.672-1.312 1.294l-.672 2.233c-.07.234-.407.234-.477 0l-.672-2.233c-.187-.622-.681-1.108-1.312-1.293l-2.266-.662c-.238-.07-.238-.401 0-.471l2.266-.662c.631-.185 1.125-.672 1.312-1.294l.672-2.233c.07-.234.407-.234.477 0z" fill="#F07C00" /></g></svg>
             {/* Blauer Stern */}
-            <svg xmlns="http://www.w3.org/2000/svg" height="18" viewBox="0 0 21 23" width="18"><g><path d="M13.251 7.208l1.176 3.908c.327 1.089 1.191 1.941 2.296 2.264l3.965 1.159c.416.122.416.703 0 .824l-3.965 1.159c-1.105.323-1.969 1.175-2.296 2.264l-1.176 3.908c-.123.41-.712.41-.835 0l-1.176-3.908c-.327-1.089-1.191-1.941-2.296-2.264l-3.965-1.159c-.416-.121-.416-.702 0-.824l3.965-1.159c1.105-.323 1.969-1.175 2.296-2.264l1.176-3.908c.123-.41.712-.41.835 0z" fill="#005C61"/></g></svg>
+            
             <span className="text-base font-medium text-gray-900 ml-1">Sophie für Versicherungen</span>
           </div>
 
@@ -426,7 +416,9 @@ const VoiceClaimReport = () => {
         </div>
 
         {/* Unterzeile: ID */}
-        <div className="text-center text-xs text-gray-400 pb-1 pt-0.5" style={{letterSpacing: '0.5px'}}>2.45.4/8c39439</div>
+        <div className="text-center text-xs text-gray-400 pb-1 pt-0.5" style={{
+        letterSpacing: '0.5px'
+      }}>2.45.4/8c39439</div>
 
         {/* Chat Messages */}
         <div className="flex-1 overflow-y-auto space-y-4 p-4">
@@ -436,8 +428,8 @@ const VoiceClaimReport = () => {
               </div>
               
               {message.isVoice && message.type === 'user' ?
-                // Voice message bubble for user
-                <Card className="flex-1 p-3 bg-blue-600 text-white border-0 max-w-xs">
+          // Voice message bubble for user
+          <Card className="flex-1 p-3 bg-blue-600 text-white border-0 max-w-xs">
                   <div className="flex items-center space-x-3">
                     <div className="flex items-center justify-center w-8 h-8 bg-blue-500 rounded-full">
                       <Mic className="h-4 w-4" />
@@ -462,16 +454,10 @@ const VoiceClaimReport = () => {
               })}
                   </div>
                 </Card> :
-                // Regular message bubble - Modified for typing effect
-                <Card className={`flex-1 p-3 border border-gray-200 ${message.type === 'bot' ? 'bg-white' : 'bg-blue-50 border-blue-200'}`}>
+          // Regular message bubble - Modified for typing effect
+          <Card className={`flex-1 p-3 border border-gray-200 ${message.type === 'bot' ? 'bg-white' : 'bg-blue-50 border-blue-200'}`}>
                   <p className="text-sm text-gray-900">
-                    {message.type === 'bot' ? (
-                      completedTyping[message.id] ? 
-                        message.content : 
-                        <TypingEffect text={message.content} typingSpeed={20} />
-                    ) : (
-                      message.content
-                    )}
+                    {message.type === 'bot' ? completedTyping[message.id] ? message.content : <TypingEffect text={message.content} typingSpeed={20} /> : message.content}
                   </p>
                   
                   {/* Uploaded Photos Display */}
